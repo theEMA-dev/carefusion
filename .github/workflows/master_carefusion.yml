@@ -48,9 +48,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_0A2D6A94B4D44433A51DD195AFD6BA46 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_A8B84E5A50E44091AB5028F3E41D98EA }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_BDF20B5EED0E4D469EE2A35628CE032C }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -63,6 +63,5 @@ jobs:
         run: |
           echo "Enabling Swagger for Development"
           # Add any additional steps to ensure Swagger is enabled in your development environment
-
 
 
