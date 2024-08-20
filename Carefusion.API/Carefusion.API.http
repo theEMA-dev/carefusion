@@ -1,0 +1,6 @@
+@Carefusion.API_HostAddress = http://localhost:5268
+
+GET {{Carefusion.API_HostAddress}}/carefusion/
+Accept: application/json
+
+###
