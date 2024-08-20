@@ -1,4 +1,4 @@
-name: Deploy to Azure Web App - Development
+name: Build and deploy ASP.Net Core app to Azure Web App - carefusion (Development)
 
 on:
   push:
@@ -22,13 +22,13 @@ jobs:
         run: dotnet build --configuration Debug
 
       - name: dotnet publish
-        run: dotnet publish -c Debug -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish -c Debug -o ./publish
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          path: ./publish
 
   deploy:
     runs-on: windows-latest
@@ -57,9 +57,12 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'carefusion'
-          package: .
+          package: ./publish
 
       - name: Enable Swagger in Development
         run: |
           echo "Enabling Swagger for Development"
           # Add any additional steps to ensure Swagger is enabled in your development environment
+
+
+
