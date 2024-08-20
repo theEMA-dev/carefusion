@@ -31,11 +31,31 @@ namespace Carefusion.Web
             services.AddScoped<IHospitalService, HospitalService>();
 
             services.AddControllers();
-
             // Add Swagger generation
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Carefusion API", Version = "v1" });
+                c.AddSecurityDefinition("ApiKeyAuth", new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.ApiKey,
+                    In = ParameterLocation.Header,
+                    Name = "X-API-KEY",
+                    Description = "API Key Authentication"
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "ApiKeyAuth"
+                            }
+                        },
+                        new string[] {}
+                    }
+                });
             });
         }
 
