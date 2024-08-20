@@ -1,8 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System.Globalization;
 using Carefusion.Business.Interfaces;
-using Carefusion.Data.Repositories;
 using Carefusion.Entities;
-using Carefusion.Core; // Add this namespace to use PatientDto
+using Carefusion.Core;
+using Carefusion.Data.Interfaces;
 
 namespace Carefusion.Business.Services
 {
@@ -20,7 +20,7 @@ namespace Carefusion.Business.Services
             var patient = await _patientRepository.GetByIdAsync(id);
             return new PatientDto
             {
-                PatientID = patient.PatientID,
+                PatientId = patient.PatientId,
                 FirstName = patient.FirstName,
                 LastName = patient.LastName,
                 BirthDate = patient.BirthDate,
@@ -42,13 +42,13 @@ namespace Carefusion.Business.Services
                 FirstName = patientDto.FirstName,
                 LastName = patientDto.LastName,
                 BirthDate = patientDto.BirthDate,
-                Gender = patientDto.Gender,
+                Gender = patientDto.Gender ?? throw new InvalidOperationException(),
                 Email = patientDto.Email,
                 Telephone = patientDto.Telephone,
                 Height = patientDto.Height,
                 Weight = patientDto.Weight,
                 BloodType = patientDto.BloodType,
-                Province = patientDto.Province,
+                Province = patientDto.Province ?? throw new InvalidOperationException(),
                 Picture = patientDto.Picture
             };
             await _patientRepository.AddAsync(patient);
@@ -62,18 +62,60 @@ namespace Carefusion.Business.Services
                 throw new Utilities.NotFoundException("Patient not found.");
             }
 
-            // Map PatientDto to Patient entity
-            patient.FirstName = patientDto.FirstName;
-            patient.LastName = patientDto.LastName;
-            patient.BirthDate = patientDto.BirthDate;
-            patient.Gender = patientDto.Gender;
-            patient.Email = patientDto.Email;
-            patient.Telephone = patientDto.Telephone;
-            patient.Height = patientDto.Height;
-            patient.Weight = patientDto.Weight;
-            patient.BloodType = patientDto.BloodType;
-            patient.Province = patientDto.Province;
-            patient.Picture = patientDto.Picture;
+            if (!string.IsNullOrEmpty(patientDto.FirstName))
+            {
+                patient.FirstName = patientDto.FirstName;
+            }
+
+            if (!string.IsNullOrEmpty(patientDto.LastName))
+            {
+                patient.LastName = patientDto.LastName;
+            }
+
+            if (!string.IsNullOrEmpty(patientDto.BirthDate.ToString(CultureInfo.CurrentCulture)))
+            {
+                patient.BirthDate = patientDto.BirthDate;
+            }
+
+            if (patientDto.Gender != null)
+            {
+                patient.Gender = patientDto.Gender;
+            }
+
+            if (!string.IsNullOrEmpty(patientDto.Email))
+            {
+                patient.Email = patientDto.Email;
+            }
+
+            if (!string.IsNullOrEmpty(patientDto.Telephone))
+            {
+                patient.Telephone = patientDto.Telephone;
+            }
+
+            if (patientDto.Height.HasValue)
+            {
+                patient.Height = patientDto.Height.Value;
+            }
+
+            if (patientDto.Weight.HasValue)
+            {
+                patient.Weight = patientDto.Weight.Value;
+            }
+
+            if (!string.IsNullOrEmpty(patientDto.BloodType))
+            {
+                patient.BloodType = patientDto.BloodType;
+            }
+
+            if (!string.IsNullOrEmpty(patientDto.Province))
+            {
+                patient.Province = patientDto.Province;
+            }
+
+            if (!string.IsNullOrEmpty(patientDto.Picture))
+            {
+                patient.Picture = patientDto.Picture;
+            }
 
             await _patientRepository.UpdateAsync(patient);
         }

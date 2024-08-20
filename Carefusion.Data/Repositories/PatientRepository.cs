@@ -1,6 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Carefusion.Data.Interfaces;
 using Carefusion.Entities;
-using System.Threading.Tasks;
 
 namespace Carefusion.Data.Repositories
 {
@@ -8,7 +7,7 @@ namespace Carefusion.Data.Repositories
     {
         public async Task<Patient> GetByIdAsync(int id)
         {
-            return await context.Patients.FindAsync(id);
+            return await context.Patients.FindAsync(id) ?? throw new InvalidOperationException();
         }
 
         public async Task AddAsync(Patient patient)

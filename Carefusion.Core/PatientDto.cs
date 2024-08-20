@@ -1,11 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Carefusion.Core
 {
     public class PatientDto
     {
-        [JsonIgnore] public int PatientID { get; init; }
+        [JsonIgnore] public int PatientId { get; init; }
         public required string FirstName { get; init; }
         public required string LastName { get; init; }
         public required DateTime BirthDate { get; init; }

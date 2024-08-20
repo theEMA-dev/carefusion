@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Carefusion.Core; // Add this namespace to use PatientDto
+﻿using Carefusion.Core; // Add this namespace to use PatientDto
 
 namespace Carefusion.Business.Interfaces
 {

@@ -1,7 +1,6 @@
 ﻿using Carefusion.Entities;
-using System.Threading.Tasks;
 
-namespace Carefusion.Data.Repositories
+namespace Carefusion.Data.Interfaces
 {
     public interface IPatientRepository
     {

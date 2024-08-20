@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 using Carefusion.Business.Interfaces;
 using Carefusion.Core;
 
@@ -20,10 +19,6 @@ namespace Carefusion.Web.Controllers
         public async Task<IActionResult> GetPatient(int id)
         {
             var patient = await _patientService.GetPatientByIdAsync(id);
-            if (patient == null)
-            {
-                return NotFound();
-            }
             return Ok(patient);
         }
 
@@ -36,13 +31,13 @@ namespace Carefusion.Web.Controllers
             }
 
             await _patientService.AddPatientAsync(patientDto);
-            return CreatedAtAction(nameof(GetPatient), new { id = patientDto.PatientID }, patientDto);
+            return CreatedAtAction(nameof(GetPatient), new { id = patientDto.PatientId }, patientDto);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdatePatient(int id, [FromBody] PatientDto patientDto)
         {
-            if (id != patientDto.PatientID)
+            if (id != patientDto.PatientId)
             {
                 return BadRequest("Patient ID mismatch.");
             }
@@ -56,7 +51,7 @@ namespace Carefusion.Web.Controllers
             {
                 return NotFound();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while updating the patient.");
             }

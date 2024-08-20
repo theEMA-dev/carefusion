@@ -1,16 +1,11 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.EntityFrameworkCore;
 using Carefusion.Data;
 using Carefusion.Data.Repositories;
 using Carefusion.Business.Interfaces;
 using Carefusion.Business.Services;
-using Carefusion.Core;
 using DotNetEnv;
 using Microsoft.OpenApi.Models;
+using Carefusion.Data.Interfaces;
 
 namespace Carefusion.Web
 {
@@ -32,6 +27,8 @@ namespace Carefusion.Web
 
             services.AddScoped<IPatientRepository, PatientRepository>();
             services.AddScoped<IPatientService, PatientService>();
+            services.AddScoped<IHospitalRepository, HospitalRepository>();
+            services.AddScoped<IHospitalService, HospitalService>();
 
             services.AddControllers();
 
