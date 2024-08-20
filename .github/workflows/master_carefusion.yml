@@ -22,13 +22,13 @@ jobs:
         run: dotnet build --configuration Debug
 
       - name: dotnet publish
-        run: dotnet publish -c Debug -o ./publish
+        run: dotnet publish -c Debug -o /myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: ./publish
+          path: ./myapp
 
   deploy:
     runs-on: windows-latest
@@ -57,7 +57,7 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'carefusion'
-          package: ./publish
+          package: .
 
       - name: Enable Swagger in Development
         run: |
