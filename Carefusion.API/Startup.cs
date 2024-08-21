@@ -6,7 +6,6 @@ using Carefusion.Business.Services;
 using DotNetEnv;
 using Microsoft.OpenApi.Models;
 using Carefusion.Data.Interfaces;
-
 namespace Carefusion.Web
 {
     public class Startup
@@ -18,12 +17,18 @@ namespace Carefusion.Web
         }
 
         public IConfiguration Configuration { get; }
-        private static readonly string DbPassword = Env.GetString("DB_STRING");
-        
+
         public void ConfigureServices(IServiceCollection services)
         {
+            var dbString = Env.GetString("DB_STRING") ?? Environment.GetEnvironmentVariable("DB_STRING");
+
+            if (string.IsNullOrEmpty(dbString))
+            {
+                throw new InvalidOperationException("Database connection string is not configured.");
+            }
+
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(DbPassword));
+                options.UseSqlServer(dbString));
 
             services.AddScoped<IPatientRepository, PatientRepository>();
             services.AddScoped<IPatientService, PatientService>();
@@ -58,6 +63,7 @@ namespace Carefusion.Web
                 });
             });
         }
+        
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {

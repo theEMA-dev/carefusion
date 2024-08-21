@@ -23,6 +23,7 @@ namespace Carefusion.Web.Controllers
         }
 
         [HttpPost]
+        [Utilities.ApiKeyAuth]
         public async Task<IActionResult> AddHospital([FromBody] HospitalDto hospitalDto)
         {
             if (!ModelState.IsValid)
@@ -35,6 +36,7 @@ namespace Carefusion.Web.Controllers
         }
 
         [HttpPut("{id}")]
+        [Utilities.ApiKeyAuth]
         public async Task<IActionResult> UpdateHospital(int id, [FromBody] HospitalDto hospitalDto)
         {
             if (id != hospitalDto.HospitalId)
