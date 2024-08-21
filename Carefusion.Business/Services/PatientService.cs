@@ -42,13 +42,13 @@ namespace Carefusion.Business.Services
                 FirstName = patientDto.FirstName,
                 LastName = patientDto.LastName,
                 BirthDate = patientDto.BirthDate,
-                Gender = patientDto.Gender ?? throw new InvalidOperationException(),
+                Gender = patientDto.Gender,
                 Email = patientDto.Email,
                 Telephone = patientDto.Telephone,
                 Height = patientDto.Height,
                 Weight = patientDto.Weight,
                 BloodType = patientDto.BloodType,
-                Province = patientDto.Province ?? throw new InvalidOperationException(),
+                Province = patientDto.Province,
                 Picture = patientDto.Picture
             };
             await _patientRepository.AddAsync(patient);
@@ -77,7 +77,7 @@ namespace Carefusion.Business.Services
                 patient.BirthDate = patientDto.BirthDate;
             }
 
-            if (patientDto.Gender != null)
+            if (!string.IsNullOrEmpty(patientDto.Gender))
             {
                 patient.Gender = patientDto.Gender;
             }
@@ -92,14 +92,14 @@ namespace Carefusion.Business.Services
                 patient.Telephone = patientDto.Telephone;
             }
 
-            if (patientDto.Height.HasValue)
+            if (!string.IsNullOrEmpty(patientDto.Height.ToString()))
             {
-                patient.Height = patientDto.Height.Value;
+                patient.Height = patientDto.Height;
             }
 
-            if (patientDto.Weight.HasValue)
+            if (!string.IsNullOrEmpty(patientDto.Weight.ToString()))
             {
-                patient.Weight = patientDto.Weight.Value;
+                patient.Weight = patientDto.Weight;
             }
 
             if (!string.IsNullOrEmpty(patientDto.BloodType))
@@ -120,5 +120,17 @@ namespace Carefusion.Business.Services
             await _patientRepository.UpdateAsync(patient);
         }
 
+        public async Task<bool> DeletePatientAsync(int id)
+        {
+            var patient = await _patientRepository.GetByIdAsync(id);
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+            if (patient == null)
+            {
+                return false;
+            }
+
+            await _patientRepository.DeleteAsync(patient);
+            return true;
+        }
     }
 }

@@ -21,6 +21,11 @@ namespace Carefusion.Data.Repositories
             context.Patients.Update(patient);
             await context.SaveChangesAsync();
         }
+        public async Task DeleteAsync(Patient patient)
+        {
+            context.Patients.Remove(patient);
+            await context.SaveChangesAsync();
+        }
 
     }
 }

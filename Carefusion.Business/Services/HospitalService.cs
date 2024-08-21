@@ -38,7 +38,7 @@ namespace Carefusion.Business.Services
             var hospital = await hospitalRepository.GetByIdAsync(id);
             if (hospital == null)
             {
-                throw new Utilities.NotFoundException("Patient not found.");
+                throw new Utilities.NotFoundException("Hospital not found.");
             }
 
             if (!string.IsNullOrEmpty(hospitalDto.HospitalName))
@@ -63,6 +63,18 @@ namespace Carefusion.Business.Services
             }
 
             await hospitalRepository.UpdateAsync(hospital);
+        }
+        public async Task<bool> DeleteHospitalAsync(int id)
+        {
+            var hospital = await hospitalRepository.GetByIdAsync(id);
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+            if (hospital == null)
+            {
+                return false;
+            }
+
+            await hospitalRepository.DeleteAsync(hospital);
+            return true;
         }
     }
 }

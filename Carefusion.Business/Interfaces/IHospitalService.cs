@@ -6,6 +6,7 @@ namespace Carefusion.Business.Interfaces
     {
         Task<HospitalDto> GetHospitalByIdAsync(int id);
         Task AddHospitalAsync(HospitalDto hospitalDto); // Ensure this method is here
-        Task UpdateHospitalAsync(int id, HospitalDto hospitalDto); // Ensure this method is here
+        Task UpdateHospitalAsync(int id, HospitalDto hospitalDto);
+        Task<bool> DeleteHospitalAsync(int id);
     }
 }

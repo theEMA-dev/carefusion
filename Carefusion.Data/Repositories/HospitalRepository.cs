@@ -1,6 +1,7 @@
 ﻿using Carefusion.Data.Interfaces;
 using Carefusion.Entities;
-
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 namespace Carefusion.Data.Repositories
 {
     public class HospitalRepository(ApplicationDbContext context) : IHospitalRepository
@@ -20,6 +21,19 @@ namespace Carefusion.Data.Repositories
         {
             context.Hospitals.Update(hospital);
             await context.SaveChangesAsync();
+        }
+        public async Task DeleteAsync(Hospital hospital)
+        {
+            try
+            {
+                context.Hospitals.Remove(hospital);
+                await context.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex) when (ex.InnerException is SqlException { Number: 547 })
+            {
+                // Foreign key constraint violation
+                throw new InvalidOperationException("Cannot delete the hospital because it has related departments.");
+            }
         }
 
     }

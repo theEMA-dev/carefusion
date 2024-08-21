@@ -39,11 +39,6 @@ namespace Carefusion.Web.Controllers
         [Utilities.ApiKeyAuth]
         public async Task<IActionResult> UpdateHospital(int id, [FromBody] HospitalDto hospitalDto)
         {
-            if (id != hospitalDto.HospitalId)
-            {
-                return BadRequest("Hospital ID mismatch.");
-            }
-
             try
             {
                 await _hospitalService.UpdateHospitalAsync(id, hospitalDto);
@@ -58,6 +53,19 @@ namespace Carefusion.Web.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while updating the hospital.");
             }
         }
+        [HttpDelete("{id}")]
+        [Utilities.ApiKeyAuth]
+        public async Task<IActionResult> DeleteHospital(int id)
+        {
+            var result = await _hospitalService.DeleteHospitalAsync(id);
+            if (!result)
+            {
+                return NotFound(); // Return 404 if the hospital is not found
+            }
+
+            return NoContent(); // Return 204 No Content on successful deletion
+        }
+
 
     }
 }

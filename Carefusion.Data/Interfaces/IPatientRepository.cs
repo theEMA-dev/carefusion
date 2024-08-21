@@ -7,5 +7,6 @@ namespace Carefusion.Data.Interfaces
         Task<Patient> GetByIdAsync(int id);
         Task AddAsync(Patient patient);
         Task UpdateAsync(Patient patient);
+        Task DeleteAsync(Patient patient);
     }
 }
