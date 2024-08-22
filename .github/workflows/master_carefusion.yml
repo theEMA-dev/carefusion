@@ -15,7 +15,7 @@ jobs:
       security-events: write
       contents: read
       packages: read
-    uses: ./.github/workflows/codeql.yml@main
+    uses: ./.github/workflows/codeql.yml
   build:
     runs-on: windows-latest
     needs: codeql
