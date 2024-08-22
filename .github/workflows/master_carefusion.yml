@@ -2,13 +2,18 @@ name: Deployment (Azure Web App)
 
 on:
   push:
+    tags:
+      - '*'
     branches:
       - master
   workflow_dispatch:
 
 jobs:
+  tests:
+    uses: ./.github/workflows/codeql.yml
   build:
     runs-on: windows-latest
+    needs: [tests]
 
     steps:
       - uses: actions/checkout@v4
