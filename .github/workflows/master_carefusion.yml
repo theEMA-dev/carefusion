@@ -9,14 +9,16 @@ on:
   workflow_dispatch:
 
 jobs:
-  tests:
+  codeql:
     permissions:
       actions: read
       security-events: write
-    uses: ./.github/workflows/codeql.yml
+      contents: read
+      packages: read
+    uses: ./.github/workflows/codeql.yml@main
   build:
     runs-on: windows-latest
-    needs: tests
+    needs: codeql
 
     steps:
       - uses: actions/checkout@v4
