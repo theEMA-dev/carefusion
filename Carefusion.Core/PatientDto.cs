@@ -11,6 +11,7 @@ namespace Carefusion.Core
         public required string FirstName { get; init; }
         [Required] [MaxLength(50)]
         public required string LastName { get; init; }
+        public string FullName => $"{FirstName} {LastName}";
         [Required]
         public required DateTime BirthDate { get; init; }
         [Required] [MaxLength(3)]

@@ -1,5 +1,6 @@
 ﻿using Carefusion.Data.Interfaces;
 using Carefusion.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Carefusion.Data.Repositories
 {
@@ -25,6 +26,11 @@ namespace Carefusion.Data.Repositories
         {
             context.Patients.Remove(patient);
             await context.SaveChangesAsync();
+        }
+
+        public async Task<List<Patient>> GetAllAsync()
+        {
+            return await context.Patients.ToListAsync();
         }
 
     }

@@ -1,4 +1,5 @@
-﻿using Carefusion.Core; // Add this namespace to use PatientDto
+﻿using Carefusion.Core;
+using Carefusion.Entities; // Add this namespace to use PatientDto
 
 namespace Carefusion.Business.Interfaces
 {
@@ -8,5 +9,6 @@ namespace Carefusion.Business.Interfaces
         Task AddPatientAsync(PatientDto patientDto); // Ensure this method is here
         Task UpdatePatientAsync(int id, PatientDto patientDto); // Ensure this method is here
         Task<bool> DeletePatientAsync(int id);
+        Task<List<Patient>> GetAllPatientsAsync();
     }
 }

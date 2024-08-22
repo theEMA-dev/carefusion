@@ -132,5 +132,10 @@ namespace Carefusion.Business.Services
             await _patientRepository.DeleteAsync(patient);
             return true;
         }
+
+        public async Task<List<Patient>> GetAllPatientsAsync()
+        {
+            return await _patientRepository.GetAllAsync();
+        }
     }
 }

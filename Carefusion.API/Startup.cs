@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Reflection;
+using Microsoft.EntityFrameworkCore;
 using Carefusion.Data;
 using Carefusion.Data.Repositories;
 using Carefusion.Business.Interfaces;
@@ -6,6 +7,7 @@ using Carefusion.Business.Services;
 using DotNetEnv;
 using Microsoft.OpenApi.Models;
 using Carefusion.Data.Interfaces;
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 namespace Carefusion.Web
 {
     public class Startup
@@ -39,7 +41,16 @@ namespace Carefusion.Web
             // Add Swagger generation
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Carefusion API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Carefusion API",
+                    Description = "Healthcare API with .NET Entity Framework and Multi-Layer Architecture",
+                    Version = "v1"
+
+                });
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
                 c.AddSecurityDefinition("ApiKeyAuth", new OpenApiSecurityScheme
                 {
                     Type = SecuritySchemeType.ApiKey,
