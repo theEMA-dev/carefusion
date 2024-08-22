@@ -4,12 +4,13 @@ on:
   push:
     tags:
       - '*'
-    branches:
-      - master
   workflow_dispatch:
 
 jobs:
   tests:
+    permissions:
+      actions: read
+      security-events: write
     uses: ./.github/workflows/codeql.yml
   build:
     runs-on: windows-latest
