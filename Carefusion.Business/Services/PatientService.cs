@@ -3,6 +3,7 @@ using Carefusion.Business.Interfaces;
 using Carefusion.Entities;
 using Carefusion.Core;
 using Carefusion.Data.Interfaces;
+using Carefusion.Core.Utilities;
 
 namespace Carefusion.Business.Services
 {
@@ -59,7 +60,7 @@ namespace Carefusion.Business.Services
             var patient = await _patientRepository.GetByIdAsync(id);
             if (patient == null)
             {
-                throw new Utilities.NotFoundException("Patient not found.");
+                throw new Authorization.NotFoundException("Patient not found.");
             }
 
             if (!string.IsNullOrEmpty(patientDto.FirstName))

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Carefusion.Business.Interfaces;
 using Carefusion.Core;
+using Carefusion.Core.Utilities;
 #pragma warning disable CS0168 // Variable is declared but never used
 
 namespace Carefusion.Web.Controllers
@@ -56,7 +57,7 @@ namespace Carefusion.Web.Controllers
         /// <response code="400">Bad request</response>
         /// <response code="500">Internal server error</response>
         [HttpPost]
-        [Utilities.ApiKeyAuth]
+        [Authorization.ApiKeyAuth]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -100,7 +101,7 @@ namespace Carefusion.Web.Controllers
         /// <response code="404">Patient does not exist</response>
         /// <response code="500">Internal server error</response>
         [HttpPut("{id}")]
-        [Utilities.ApiKeyAuth]
+        [Authorization.ApiKeyAuth]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -111,7 +112,7 @@ namespace Carefusion.Web.Controllers
                 await _patientService.UpdatePatientAsync(id, patientDto);
                 return Ok();
             }
-            catch (Utilities.NotFoundException)
+            catch (Authorization.NotFoundException)
             {
                 return NotFound();
             }
@@ -130,7 +131,7 @@ namespace Carefusion.Web.Controllers
         /// <response code="404">Patient does not exist</response>
         /// <response code="500">Internal server error</response>
         [HttpDelete("{id}")]
-        [Utilities.ApiKeyAuth]
+        [Authorization.ApiKeyAuth]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

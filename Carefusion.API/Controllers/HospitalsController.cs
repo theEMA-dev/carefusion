@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Carefusion.Business.Interfaces;
 using Carefusion.Core;
+using Carefusion.Core.Utilities;
+using Carefusion.Core.Criterias;
 #pragma warning disable CS0168 // Variable is declared but never used
 
 namespace Carefusion.Web.Controllers
@@ -48,6 +50,44 @@ namespace Carefusion.Web.Controllers
         }
 
         /// <summary>
+        /// Search hospitals
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="hospitalFilterCriteria"></param>
+        /// <param name="hospitalSortCriteria"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        [HttpGet("search")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> SearchHospitals(
+            [FromQuery] string? name,
+            [FromQuery] HospitalFilterCriteria hospitalFilterCriteria,
+            [FromQuery] HospitalSortCriteria hospitalSortCriteria,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 50)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(name))
+                {
+                    var (hospitals, totalCount) = await _hospitalService.SearchHospitalsAsync(" ", hospitalFilterCriteria, hospitalSortCriteria, pageNumber, pageSize);
+                    return Ok(new { Hospitals = hospitals, TotalCount = totalCount });
+                }
+                else
+                {
+                    var (hospitals, totalCount) = await _hospitalService.SearchHospitalsAsync(name, hospitalFilterCriteria, hospitalSortCriteria, pageNumber, pageSize);
+                    return Ok(new { Hospitals = hospitals, TotalCount = totalCount });
+                }
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
         /// Adds a new hospital
         /// </summary>
         /// <returns>Ok if new hospital is added, bad request if request is problematic.</returns>
@@ -56,7 +96,7 @@ namespace Carefusion.Web.Controllers
         /// <response code="400">Bad request</response>
         /// <response code="500">Internal server error</response>
         [HttpPost]
-        [Utilities.ApiKeyAuth]
+        [Authorization.ApiKeyAuth]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -70,7 +110,7 @@ namespace Carefusion.Web.Controllers
             try
             {
                 await _hospitalService.AddHospitalAsync(hospitalDto);
-                return CreatedAtAction(nameof(GetHospital), new { id = hospitalDto.HospitalId }, hospitalDto);
+                return CreatedAtAction(nameof(GetHospital), new { id = hospitalDto.Identifier }, hospitalDto);
             }
             catch (Exception ex)
             {
@@ -89,7 +129,7 @@ namespace Carefusion.Web.Controllers
         /// <response code="404">Hospital does not exist</response>
         /// <response code="500">Internal server error</response>
         [HttpPut("{id}")]
-        [Utilities.ApiKeyAuth]
+        [Authorization.ApiKeyAuth]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -100,7 +140,7 @@ namespace Carefusion.Web.Controllers
                 await _hospitalService.UpdateHospitalAsync(id, hospitalDto);
                 return Ok();
             }
-            catch (Utilities.NotFoundException)
+            catch (Authorization.NotFoundException)
             {
                 return NotFound();
             }
@@ -119,7 +159,7 @@ namespace Carefusion.Web.Controllers
         /// <response code="404">Hospital does not exist</response>
         /// <response code="500">Internal server error</response>
         [HttpDelete("{id}")]
-        [Utilities.ApiKeyAuth]
+        [Authorization.ApiKeyAuth]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

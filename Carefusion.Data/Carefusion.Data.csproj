@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Carefusion.Core\Carefusion.Core.csproj" />
     <ProjectReference Include="..\Carefusion.Entities\Carefusion.Entities.csproj" />
   </ItemGroup>
 

@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc;
 using DotNetEnv;
-namespace Carefusion.Core
+
+namespace Carefusion.Core.Utilities
 {
-    public abstract class Utilities
+    public abstract class Authorization
     {
         public class NotFoundException(string message) : Exception(message);
 

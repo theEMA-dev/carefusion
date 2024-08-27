@@ -1,4 +1,5 @@
-﻿namespace Carefusion.Web
+﻿#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+namespace Carefusion.Web
 {
     public static class Program
     {

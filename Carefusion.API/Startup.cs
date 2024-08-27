@@ -7,6 +7,7 @@ using Carefusion.Business.Services;
 using DotNetEnv;
 using Microsoft.OpenApi.Models;
 using Carefusion.Data.Interfaces;
+
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 namespace Carefusion.Web
 {
@@ -32,6 +33,7 @@ namespace Carefusion.Web
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(dbString));
 
+            services.AddAutoMapper(typeof(Startup));
             services.AddScoped<IPatientRepository, PatientRepository>();
             services.AddScoped<IPatientService, PatientService>();
             services.AddScoped<IHospitalRepository, HospitalRepository>();
@@ -46,7 +48,6 @@ namespace Carefusion.Web
                     Title = "Carefusion API",
                     Description = "Healthcare API with .NET Entity Framework and Multi-Layer Architecture",
                     Version = "v1"
-
                 });
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
@@ -74,7 +75,6 @@ namespace Carefusion.Web
                 });
             });
         }
-        
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
@@ -87,7 +87,6 @@ namespace Carefusion.Web
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
-
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
