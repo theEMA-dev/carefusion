@@ -2,13 +2,12 @@ using Microsoft.AspNetCore.Mvc;
 using Carefusion.Business.Interfaces;
 using Carefusion.Core;
 using Carefusion.Core.Utilities;
-using Carefusion.Core.Criterias;
 #pragma warning disable CS0168 // Variable is declared but never used
 
 namespace Carefusion.Web.Controllers
 {
     /// <inheritdoc />
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class HospitalsController : ControllerBase
     {
@@ -41,7 +40,7 @@ namespace Carefusion.Web.Controllers
             }
             catch (InvalidOperationException)
             {
-                return NotFound();
+                return NotFound(new {});
             }
             catch (Exception ex)
             {
@@ -52,40 +51,39 @@ namespace Carefusion.Web.Controllers
         /// <summary>
         /// Search hospitals
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="hospitalFilterCriteria"></param>
-        /// <param name="hospitalSortCriteria"></param>
+        /// <param name="q">Search</param>
+        /// <param name="type">general | specialty | clinic | urgent care | training and research</param>
+        /// <param name="sort">numberOfBedsAsc | numberOfBedsDesc | emergencyServices | city | district</param>
         /// <param name="pageNumber"></param>
         /// <param name="pageSize"></param>
+        /// <param name="showInactive"></param>
         /// <returns></returns>
+        /// <response code="204">Cannot find hospital fitting the parameters</response>
         [HttpGet("search")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> SearchHospitals(
-            [FromQuery] string? name,
-            [FromQuery] HospitalFilterCriteria hospitalFilterCriteria,
-            [FromQuery] HospitalSortCriteria hospitalSortCriteria,
+            [FromQuery] string? q,
+            [FromQuery] string[]? type,
+            [FromQuery] string[]? sort,
             [FromQuery] int pageNumber = 1,
-            [FromQuery] int pageSize = 50)
+            [FromQuery] int pageSize = 50,
+            [FromQuery] bool showInactive = false)
         {
             try
             {
-                if (string.IsNullOrEmpty(name))
-                {
-                    var (hospitals, totalCount) = await _hospitalService.SearchHospitalsAsync(" ", hospitalFilterCriteria, hospitalSortCriteria, pageNumber, pageSize);
-                    return Ok(new { Hospitals = hospitals, TotalCount = totalCount });
-                }
-                else
-                {
-                    var (hospitals, totalCount) = await _hospitalService.SearchHospitalsAsync(name, hospitalFilterCriteria, hospitalSortCriteria, pageNumber, pageSize);
-                    return Ok(new { Hospitals = hospitals, TotalCount = totalCount });
-                }
+                var (hospitals, totalCount) = await _hospitalService.SearchHospitalsAsync(q ?? " ", type, sort, pageNumber, pageSize, showInactive);
+                if (totalCount == 0) return NotFound();
+
+                return Ok(new { Hospitals = hospitals, TotalCount = totalCount });
             }
             catch (Exception)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
+
 
         /// <summary>
         /// Adds a new hospital
@@ -126,12 +124,12 @@ namespace Carefusion.Web.Controllers
         /// <returns>No content if successful, not found if the hospital does not exist.</returns>
         /// <response code="200">Changes applied</response>
         /// <response code="401">Unauthorized, please enter API key</response>
-        /// <response code="404">Hospital does not exist</response>
+        /// <response code="204">Hospital does not exist</response>
         /// <response code="500">Internal server error</response>
         [HttpPut("{id}")]
         [Authorization.ApiKeyAuth]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateHospital(int id, [FromBody] HospitalDto hospitalDto)
         {
@@ -140,9 +138,9 @@ namespace Carefusion.Web.Controllers
                 await _hospitalService.UpdateHospitalAsync(id, hospitalDto);
                 return Ok();
             }
-            catch (Authorization.NotFoundException)
+            catch (InvalidOperationException)
             {
-                return NotFound();
+                return NoContent();
             }
             catch (Exception ex)
             {

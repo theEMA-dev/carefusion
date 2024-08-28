@@ -1,9 +1,7 @@
-﻿using System.Globalization;
-using Carefusion.Business.Interfaces;
+﻿using Carefusion.Business.Interfaces;
 using Carefusion.Entities;
 using Carefusion.Core;
 using Carefusion.Data.Interfaces;
-using Carefusion.Core.Utilities;
 
 namespace Carefusion.Business.Services
 {
@@ -58,66 +56,6 @@ namespace Carefusion.Business.Services
         public async Task UpdatePatientAsync(int id, PatientDto patientDto)
         {
             var patient = await _patientRepository.GetByIdAsync(id);
-            if (patient == null)
-            {
-                throw new Authorization.NotFoundException("Patient not found.");
-            }
-
-            if (!string.IsNullOrEmpty(patientDto.FirstName))
-            {
-                patient.FirstName = patientDto.FirstName;
-            }
-
-            if (!string.IsNullOrEmpty(patientDto.LastName))
-            {
-                patient.LastName = patientDto.LastName;
-            }
-
-            if (!string.IsNullOrEmpty(patientDto.BirthDate.ToString(CultureInfo.CurrentCulture)))
-            {
-                patient.BirthDate = patientDto.BirthDate;
-            }
-
-            if (!string.IsNullOrEmpty(patientDto.Gender))
-            {
-                patient.Gender = patientDto.Gender;
-            }
-
-            if (!string.IsNullOrEmpty(patientDto.Email))
-            {
-                patient.Email = patientDto.Email;
-            }
-
-            if (!string.IsNullOrEmpty(patientDto.Telephone))
-            {
-                patient.Telephone = patientDto.Telephone;
-            }
-
-            if (!string.IsNullOrEmpty(patientDto.Height.ToString()))
-            {
-                patient.Height = patientDto.Height;
-            }
-
-            if (!string.IsNullOrEmpty(patientDto.Weight.ToString()))
-            {
-                patient.Weight = patientDto.Weight;
-            }
-
-            if (!string.IsNullOrEmpty(patientDto.BloodType))
-            {
-                patient.BloodType = patientDto.BloodType;
-            }
-
-            if (!string.IsNullOrEmpty(patientDto.Province))
-            {
-                patient.Province = patientDto.Province;
-            }
-
-            if (!string.IsNullOrEmpty(patientDto.Picture))
-            {
-                patient.Picture = patientDto.Picture;
-            }
-
             await _patientRepository.UpdateAsync(patient);
         }
 

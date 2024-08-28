@@ -112,7 +112,7 @@ namespace Carefusion.Web.Controllers
                 await _patientService.UpdatePatientAsync(id, patientDto);
                 return Ok();
             }
-            catch (Authorization.NotFoundException)
+            catch (InvalidOperationException)
             {
                 return NotFound();
             }

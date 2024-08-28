@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using Carefusion.Business.Interfaces;
 using Carefusion.Core;
-using Carefusion.Core.Criterias;
-using Carefusion.Core.Utilities;
 using Carefusion.Data.Interfaces;
 using Carefusion.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -28,15 +26,36 @@ namespace Carefusion.Business.Services
             return _mapper.Map<HospitalDto>(hospital);
         }
 
-        public async Task<(IEnumerable<HospitalDto> Hospitals, int TotalCount)> GetAllHospitalsAsync(int pageNumber, int pageSize)
+        public async Task<(IEnumerable<HospitalDto> Hospitals, int TotalCount)> SearchHospitalsAsync(
+            string? q,
+            string[]? typeField,
+            string[]? sortField,
+            int pageNumber,
+            int pageSize,
+            bool showInactive)
         {
-            var (hospitals, totalCount) = await _hospitalRepository.GetAllAsync(pageNumber, pageSize);
-            return (_mapper.Map<IEnumerable<HospitalDto>>(hospitals), totalCount);
-        }
+            var query = _hospitalRepository.GetQuery();
 
-        public async Task<(IEnumerable<HospitalDto> Hospitals, int TotalCount)> SearchHospitalsAsync(string searchTerm, HospitalFilterCriteria? filterCriteria, HospitalSortCriteria? sortCriteria, int pageNumber, int pageSize)
-        {
-            var query = _hospitalRepository.SearchHospitals(searchTerm, filterCriteria, sortCriteria);
+            if (!string.IsNullOrEmpty(q))
+            {
+                query = query.Where(h => h.Affiliation != null && (h.Name.Contains(q) || h.Code.Contains(q) || h.Affiliation.Contains(q)));
+            }
+
+            if (!showInactive)
+            {
+                query = query.Where(h => h.Active);
+            }
+
+            if (typeField is { Length: > 0 })
+            {
+                query = query.Where(h => typeField.Contains(h.Type));
+            }
+
+            if (sortField is { Length: > 0 })
+            {
+                query = ApplySorting(query, sortField);
+            }
+
             var totalCount = await query.CountAsync();
 
             var hospitals = await query
@@ -46,6 +65,19 @@ namespace Carefusion.Business.Services
 
             var hospitalDtos = _mapper.Map<IEnumerable<HospitalDto>>(hospitals);
             return (hospitalDtos, totalCount);
+        }
+
+        private static IQueryable<Hospital> ApplySorting(IQueryable<Hospital> query, string[] sortFields)
+        {
+            return sortFields.Aggregate(query, (current, sortField) => sortField switch
+            {
+                "numberOfBedsAsc" => current.OrderBy(h => h.NumberOfBeds),
+                "numberOfBedsDesc" => current.OrderByDescending(h => h.NumberOfBeds),
+                "emergencyServices" => current.OrderByDescending(h => h.EmergencyServices),
+                "city" => current.OrderBy(h => h.City),
+                "district" => current.OrderBy(h => h.District),
+                _ => current
+            });
         }
 
         public async Task AddHospitalAsync(HospitalDto hospitalDto)
@@ -60,7 +92,7 @@ namespace Carefusion.Business.Services
             var hospital = await _hospitalRepository.GetByIdAsync(id);
             if (hospital == null)
             {
-                throw new Authorization.NotFoundException("Hospital not found.");
+                throw new InvalidOperationException();
             }
 
             _mapper.Map(hospitalDto, hospital);

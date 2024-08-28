@@ -6,8 +6,6 @@ namespace Carefusion.Core.Utilities
 {
     public abstract class Authorization
     {
-        public class NotFoundException(string message) : Exception(message);
-
         [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
         public class ApiKeyAuthAttribute : Attribute, IAuthorizationFilter
         {
