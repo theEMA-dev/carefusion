@@ -29,7 +29,8 @@ namespace Carefusion.Business.Services
         public async Task<(IEnumerable<HospitalDto> Hospitals, int TotalCount)> SearchHospitalsAsync(
             string? q,
             string[]? typeField,
-            string[]? sortField,
+            HospitalSort? sortField,
+            bool? emergencyServices,
             int pageNumber,
             int pageSize,
             bool showInactive)
@@ -46,15 +47,17 @@ namespace Carefusion.Business.Services
                 query = query.Where(h => h.Active);
             }
 
+            if (emergencyServices.HasValue)
+            {
+                query = query.Where(h => h.EmergencyServices == emergencyServices.Value);
+            }
+
             if (typeField is { Length: > 0 })
             {
                 query = query.Where(h => typeField.Contains(h.Type));
             }
 
-            if (sortField is { Length: > 0 })
-            {
-                query = ApplySorting(query, sortField);
-            }
+            query = sortField is not null ? ApplySorting(query, sortField) : query.OrderBy(h => h.Identifier);
 
             var totalCount = await query.CountAsync();
 
@@ -67,17 +70,18 @@ namespace Carefusion.Business.Services
             return (hospitalDtos, totalCount);
         }
 
-        private static IQueryable<Hospital> ApplySorting(IQueryable<Hospital> query, string[] sortFields)
+        private static IQueryable<Hospital> ApplySorting(IQueryable<Hospital> query, HospitalSort? sortField)
         {
-            return sortFields.Aggregate(query, (current, sortField) => sortField switch
+            return sortField switch
             {
-                "numberOfBedsAsc" => current.OrderBy(h => h.NumberOfBeds),
-                "numberOfBedsDesc" => current.OrderByDescending(h => h.NumberOfBeds),
-                "emergencyServices" => current.OrderByDescending(h => h.EmergencyServices),
-                "city" => current.OrderBy(h => h.City),
-                "district" => current.OrderBy(h => h.District),
-                _ => current
-            });
+                HospitalSort.alphabeticalAsc => query.OrderBy(h => h.Name),
+                HospitalSort.alphabeticalDesc => query.OrderByDescending(h => h.Name),
+                HospitalSort.numberOfBedsAsc => query.OrderBy(h => h.NumberOfBeds),
+                HospitalSort.numberOfBedsDesc => query.OrderByDescending(h => h.NumberOfBeds),
+                HospitalSort.newest => query.OrderByDescending(h => h.RecordUpdated),
+                HospitalSort.oldest => query.OrderBy(h => h.RecordUpdated),
+                _ => throw new ArgumentOutOfRangeException(nameof(sortField), sortField, null)
+            };
         }
 
         public async Task AddHospitalAsync(HospitalDto hospitalDto)
@@ -103,7 +107,6 @@ namespace Carefusion.Business.Services
         public async Task<bool> DeleteHospitalAsync(int id)
         {
             var hospital = await _hospitalRepository.GetByIdAsync(id);
-
             await _hospitalRepository.DeleteAsync(hospital);
             return true;
         }

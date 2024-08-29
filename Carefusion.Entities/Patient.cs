@@ -5,26 +5,33 @@ namespace Carefusion.Entities
     public class Patient
     {
         [Key]
-        public int PatientId { get; set; }
-        [Required] [StringLength(255)]
-        public required string FirstName { get; set; }
-        [Required] [StringLength(50)]
-        public required string LastName { get; set; }
+        public int Identifier { get; init; }
         [Required]
-        public required DateTime BirthDate { get; set; }
-        [StringLength(5)]
-        public string? Gender { get; set; }
-        [StringLength(255)]
-        public string? Email { get; set; }
-        [StringLength(15)]
-        public string? Telephone { get; set; }
-        public decimal? Height { get; set; }
-        public decimal? Weight { get; set; }
-        [Required] [StringLength(3)]
-        public required string BloodType { get; set; }
-        [StringLength(50)]
-        public string? Province { get; set; }
+        [StringLength(150)]
+        public required string Name { get; init; }
+        [Required]
+        public required DateOnly BirthDate { get; init; }
+        [Required]
+        [StringLength(25)]
+        public required string Gender { get; init; }
+        [Required]
+        [StringLength(3)]
+        public required string BloodType { get; init; }
+        [Required]
+        [StringLength(11)]
+        public required string GovernmentId { get; init; }
         [StringLength(1024)]
-        public string? Picture { get; set; }
+        public string? Picture { get; init; }
+        public int? AssignedPractitioner { get; init; }
+        [StringLength(50)]
+        public string? HealthcareProvider { get; init; }
+        [StringLength(50)]
+        public string? PreferredLanguage { get; init; }
+        [Required]
+        public required bool Active { get; init; }
+        [Required]
+        public required bool Deceased { get; init; }
+        [Required]
+        public required DateTime RecordUpdated { get; set; }
     }
 }

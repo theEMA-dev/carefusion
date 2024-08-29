@@ -1,33 +1,45 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Carefusion.Core
 {
     public class PatientDto
-    { 
-        [Key] [JsonIgnore]
-        public int PatientId { get; init; }
-        [Required] [MaxLength(255)]
-        public required string FirstName { get; init; }
-        [Required] [MaxLength(50)]
-        public required string LastName { get; init; }
-        public string FullName => $"{FirstName} {LastName}";
+    {
+        [Key]
+        [JsonIgnore]
+        public int Identifier { get; init; }
         [Required]
-        public required DateTime BirthDate { get; init; }
-        [Required] [MaxLength(3)]
+        [StringLength(150)]
+        public required string Name { get; init; }
+        [Required]
+        public required DateOnly BirthDate { get; init; }
+        [Required]
+        [StringLength(25)]
+        public required string Gender { get; init; }
+        [Required]
+        [StringLength(3)]
         public required string BloodType { get; init; }
-        public string FormattedBirthDate => BirthDate.ToString("yyyy-MM-dd");
-        public string? Gender { get; init; }
-        [MaxLength(255)]
-        public string? Email { get; init; }
-        [MaxLength(15)]
-        public string? Telephone { get; init; }
-        public decimal? Height { get; init;}
-        public decimal? Weight { get; init; }
-        [MaxLength(50)]
-        public string? Province { get; init; }
-        [MaxLength(1024)]
+        [Required]
+        [StringLength(11)]
+        public required string GovernmentId { get; init; }
+        [DefaultValue(null)]
+        [StringLength(1024)]
         public string? Picture { get; init; }
-
+        [DefaultValue(null)]
+        public int? AssignedPractitioner { get; init; }
+        [DefaultValue(null)]
+        [StringLength(50)]
+        public string? HealthcareProvider { get; init; }
+        [DefaultValue("turkish")]
+        [StringLength(50)]
+        public string? PreferredLanguage { get; init; }
+        [Required]
+        [DefaultValue(true)]
+        public required bool Active { get; init; }
+        [Required]
+        [DefaultValue(false)]
+        public required bool Deceased { get; init; }
+        public int Id => Identifier;
     }
 }

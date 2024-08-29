@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace Carefusion.Core
@@ -15,9 +14,8 @@ namespace Carefusion.Core
         [Required]
         [StringLength(25)]
         public required string Code { get; init; }
-        [AllowNull]
         [StringLength(25)]
-        public string Affiliation { get; init; }
+        public string? Affiliation { get; init; }
         [Required]
         [StringLength(25)]
         public required string Type { get; init; }
@@ -37,13 +35,12 @@ namespace Carefusion.Core
         [Required]
         [StringLength(255)]
         public required string Address { get; init; }
-        [AllowNull]
         [StringLength(25)]
-        public string PhoneNumber { get; init; }
-        [AllowNull]
+        public string? PhoneNumber { get; init; }
         [StringLength(25)]
-        public string FaxNumber { get; init; }
+        public string? FaxNumber { get; init; }
         [Required]
         public required bool Active { get; init; }
+        public int Id => Identifier;
     }
 }

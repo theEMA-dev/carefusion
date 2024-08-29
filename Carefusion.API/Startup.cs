@@ -7,6 +7,7 @@ using Carefusion.Business.Services;
 using DotNetEnv;
 using Microsoft.OpenApi.Models;
 using Carefusion.Data.Interfaces;
+using System.Text.Json.Serialization;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 namespace Carefusion.Web
@@ -39,7 +40,11 @@ namespace Carefusion.Web
             services.AddScoped<IHospitalRepository, HospitalRepository>();
             services.AddScoped<IHospitalService, HospitalService>();
 
-            services.AddControllers();
+            services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                });
             // Add Swagger generation
             services.AddSwaggerGen(c =>
             {

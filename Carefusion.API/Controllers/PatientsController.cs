@@ -7,7 +7,7 @@ using Carefusion.Core.Utilities;
 namespace Carefusion.Web.Controllers
 {
     /// <inheritdoc />
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class PatientsController : ControllerBase
     {
@@ -23,10 +23,6 @@ namespace Carefusion.Web.Controllers
         /// Finds a patient by ID
         /// </summary>
         /// <param name="id"></param>
-        /// <returns>Ok if patient is found, not found if patient cannot be found.</returns>
-        /// <response code="200">Patient is found</response>
-        /// <response code="404">Patient cannot be found</response>
-        /// <response code ="500">Internal server error</response>
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -49,13 +45,75 @@ namespace Carefusion.Web.Controllers
         }
 
         /// <summary>
+        /// Finds a patient by government ID
+        /// </summary>
+        /// <param name="govId"></param>
+        [HttpGet("gov/{govId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetPatientByGovId(string govId)
+        {
+            try
+            {
+                var patient = await _patientService.GetPatientByGovId(govId);
+                return Ok(patient);
+            }
+            catch (InvalidOperationException)
+            {
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Search patients
+        /// </summary>
+        /// <param name="q">Search</param>
+        /// <param name="sort"></param>
+        /// <param name="bloodType"></param>
+        /// <param name="birthStartDate"></param>
+        /// <param name="birthEndDate"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="showDeceased"></param>
+        /// <param name="showInactive"></param>
+        /// <param name="gender"></param>
+        [HttpGet("search")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> SearchPatients(
+            [FromQuery] string? q,
+            [FromQuery] Gender? gender,
+            [FromQuery] BloodType? bloodType,
+            [FromQuery] DateOnly? birthStartDate,
+            [FromQuery] DateOnly? birthEndDate,
+            [FromQuery] PatientSort? sort,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 50,
+            [FromQuery] bool showDeceased = false,
+            [FromQuery] bool showInactive = false)
+        {
+            try
+            {
+                var (patients, totalCount) = await _patientService.SearchPatientsAsync(q ?? " ", sort, gender, bloodType, birthStartDate, birthEndDate, pageNumber, pageSize, showDeceased, showInactive);
+                if (totalCount == 0) return NotFound();
+
+                return Ok(new { Patients = patients, TotalCount = totalCount });
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
         /// Adds a new patient
         /// </summary>
-        /// <returns>Ok if new patient is added, bad request if request is problematic.</returns>
-        /// <response code="201">Patient added</response>
-        /// <response code="401">Unauthorized, please enter API key</response>
-        /// <response code="400">Bad request</response>
-        /// <response code="500">Internal server error</response>
         [HttpPost]
         [Authorization.ApiKeyAuth]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -71,7 +129,7 @@ namespace Carefusion.Web.Controllers
             try
             {
                 await _patientService.AddPatientAsync(patientDto);
-                return CreatedAtAction(nameof(GetPatient), new { id = patientDto.PatientId }, patientDto);
+                return CreatedAtAction(nameof(GetPatient), new { id = patientDto.Identifier }, patientDto);
             }
             catch (Exception ex)
             {
@@ -80,26 +138,10 @@ namespace Carefusion.Web.Controllers
         }
 
         /// <summary>
-        /// Get all patients
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        public async Task<IActionResult> GetAllPatients()
-        {
-            var patients = await _patientService.GetAllPatientsAsync();
-            return Ok(patients);
-        }
-
-        /// <summary>
         /// Modifies the patient by ID
         /// </summary>
         /// <param name="id"></param>
         /// <param name="patientDto"></param>
-        /// <returns>Ok if the changes are successful, not found if the patient does not exist.</returns>
-        /// <response code="200">Changes applied</response>
-        /// <response code="401">Unauthorized, please enter API key</response>
-        /// <response code="404">Patient does not exist</response>
-        /// <response code="500">Internal server error</response>
         [HttpPut("{id}")]
         [Authorization.ApiKeyAuth]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -124,12 +166,7 @@ namespace Carefusion.Web.Controllers
         /// <summary>
         /// Deletes a patient by ID
         /// </summary>
-        /// <param name="id">The ID of the patient to delete.</param>
-        /// <returns>No content if successful, not found if the patient does not exist.</returns>
-        /// <response code="204">Patient deleted</response>
-        /// <response code="401">Unauthorized, please enter API key</response>
-        /// <response code="404">Patient does not exist</response>
-        /// <response code="500">Internal server error</response>
+        /// <param name="id"></param>
         [HttpDelete("{id}")]
         [Authorization.ApiKeyAuth]
         [ProducesResponseType(StatusCodes.Status204NoContent)]

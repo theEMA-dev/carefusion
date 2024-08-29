@@ -44,7 +44,6 @@ namespace Carefusion.Data.Repositories
             }
             catch (DbUpdateException ex) when (ex.InnerException is SqlException { Number: 547 })
             {
-                // Foreign key constraint violation
                 throw new InvalidOperationException("Cannot delete the hospital because it has related departments.");
             }
         }

@@ -23,10 +23,6 @@ namespace Carefusion.Web.Controllers
         /// Finds a hospital by ID
         /// </summary>
         /// <param name="id"></param>
-        /// <returns>Ok if hospital is found, not found if hospital cannot be found.</returns>
-        /// <response code="200">Hospital is found</response>
-        /// <response code="404">Hospital cannot be found</response>
-        /// <response code ="500">Internal server error</response>
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -52,13 +48,12 @@ namespace Carefusion.Web.Controllers
         /// Search hospitals
         /// </summary>
         /// <param name="q">Search</param>
-        /// <param name="type">general | specialty | clinic | urgent care | training and research</param>
-        /// <param name="sort">numberOfBedsAsc | numberOfBedsDesc | emergencyServices | city | district</param>
+        /// <param name="type">general | specialty | clinic | urgentCare | trainingAndResearch</param>
+        /// <param name="sort"></param>
+        /// <param name="emergencyServices"></param>
         /// <param name="pageNumber"></param>
         /// <param name="pageSize"></param>
         /// <param name="showInactive"></param>
-        /// <returns></returns>
-        /// <response code="204">Cannot find hospital fitting the parameters</response>
         [HttpGet("search")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -66,14 +61,15 @@ namespace Carefusion.Web.Controllers
         public async Task<IActionResult> SearchHospitals(
             [FromQuery] string? q,
             [FromQuery] string[]? type,
-            [FromQuery] string[]? sort,
+            [FromQuery] HospitalSort? sort,
+            [FromQuery] bool? emergencyServices = null,
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 50,
             [FromQuery] bool showInactive = false)
         {
             try
             {
-                var (hospitals, totalCount) = await _hospitalService.SearchHospitalsAsync(q ?? " ", type, sort, pageNumber, pageSize, showInactive);
+                var (hospitals, totalCount) = await _hospitalService.SearchHospitalsAsync(q ?? " ", type, sort, emergencyServices, pageNumber, pageSize, showInactive);
                 if (totalCount == 0) return NotFound();
 
                 return Ok(new { Hospitals = hospitals, TotalCount = totalCount });
@@ -88,11 +84,6 @@ namespace Carefusion.Web.Controllers
         /// <summary>
         /// Adds a new hospital
         /// </summary>
-        /// <returns>Ok if new hospital is added, bad request if request is problematic.</returns>
-        /// <response code="201">Hospital is added</response>
-        /// <response code="401">Unauthorized, please enter API key</response>
-        /// <response code="400">Bad request</response>
-        /// <response code="500">Internal server error</response>
         [HttpPost]
         [Authorization.ApiKeyAuth]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -100,19 +91,15 @@ namespace Carefusion.Web.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AddHospital([FromBody] HospitalDto hospitalDto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             try
             {
                 await _hospitalService.AddHospitalAsync(hospitalDto);
                 return CreatedAtAction(nameof(GetHospital), new { id = hospitalDto.Identifier }, hospitalDto);
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                Console.WriteLine(e);
+                throw;
             }
         }
 
@@ -121,11 +108,6 @@ namespace Carefusion.Web.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <param name="hospitalDto"></param>
-        /// <returns>No content if successful, not found if the hospital does not exist.</returns>
-        /// <response code="200">Changes applied</response>
-        /// <response code="401">Unauthorized, please enter API key</response>
-        /// <response code="204">Hospital does not exist</response>
-        /// <response code="500">Internal server error</response>
         [HttpPut("{id}")]
         [Authorization.ApiKeyAuth]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -151,11 +133,6 @@ namespace Carefusion.Web.Controllers
         /// Deletes a hospital by ID
         /// </summary>
         /// <param name="id"></param>
-        /// <returns>No content if successful, not found if the hospital does not exist.</returns>
-        /// <response code="204">Hospital deleted</response>
-        /// <response code="401">Unauthorized, please enter API key</response>
-        /// <response code="404">Hospital does not exist</response>
-        /// <response code="500">Internal server error</response>
         [HttpDelete("{id}")]
         [Authorization.ApiKeyAuth]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
