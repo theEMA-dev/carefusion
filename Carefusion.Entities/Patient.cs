@@ -25,8 +25,6 @@ namespace Carefusion.Entities
         public int? AssignedPractitioner { get; init; }
         [StringLength(50)]
         public string? HealthcareProvider { get; init; }
-        [StringLength(50)]
-        public string? PreferredLanguage { get; init; }
         [Required]
         public required bool Active { get; init; }
         [Required]

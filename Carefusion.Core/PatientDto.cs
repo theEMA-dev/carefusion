@@ -31,9 +31,6 @@ namespace Carefusion.Core
         [DefaultValue(null)]
         [StringLength(50)]
         public string? HealthcareProvider { get; init; }
-        [DefaultValue("turkish")]
-        [StringLength(50)]
-        public string? PreferredLanguage { get; init; }
         [Required]
         [DefaultValue(true)]
         public required bool Active { get; init; }
