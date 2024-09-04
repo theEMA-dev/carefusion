@@ -1,13 +1,12 @@
 ﻿using Carefusion.Entities;
 
-namespace Carefusion.Data.Interfaces
+namespace Carefusion.Data.Interfaces;
+
+public interface IHospitalRepository
 {
-    public interface IHospitalRepository
-    {
-        Task<Hospital> GetByIdAsync(int id);
-        IQueryable<Hospital> GetQuery();
-        Task AddAsync(Hospital hospital);
-        Task UpdateAsync(Hospital hospital);
-        Task DeleteAsync(Hospital hospital);
-    }
+    Task<Hospital> GetByIdAsync(int id);
+    IQueryable<Hospital> GetQuery();
+    Task AddAsync(Hospital hospital);
+    Task UpdateAsync(Hospital hospital);
+    Task DeleteAsync(Hospital hospital);
 }

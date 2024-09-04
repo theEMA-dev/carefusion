@@ -1,10 +1,10 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Carefusion.Core;
 
-public class PatientDto
+public class PractitionerDto
 {
     [Key]
     [JsonIgnore]
@@ -17,26 +17,28 @@ public class PatientDto
     [Required]
     [StringLength(25)]
     public required string Gender { get; init; }
-    [Required]
-    [StringLength(3)]
-    public required string BloodType { get; init; }
+    [StringLength(25)]
+    [DefaultValue(null)]
+    public string? Specialty { get; init; }
+    [StringLength(25)]
+    [DefaultValue(null)]
+    public string? Title { get; init; }
+    [StringLength(50)]
+    [DefaultValue(null)]
+    public string? Role { get; init; }
     [Required]
     [StringLength(11)]
     public required string GovernmentId { get; init; }
-    [DefaultValue(null)]
     [StringLength(1024)]
+    [DefaultValue(null)]
     public string? Picture { get; init; }
     [DefaultValue(null)]
-    public int? AssignedPractitioner { get; init; }
+    public int? AssignedHospital { get; init; }
     [DefaultValue(null)]
-    [StringLength(50)]
-    public string? HealthcareProvider { get; init; }
+    public int? AssignedDepartment { get; init; }
     [Required]
     [DefaultValue(true)]
     public required bool Active { get; init; }
-    [Required]
-    [DefaultValue(false)]
-    public required bool Deceased { get; init; }
-    public List<CommunicationDto>? Communication { get; init; }
+    public List<CommunicationDto>? Communication { get; init; } = [];
     public int Id => Identifier;
 }

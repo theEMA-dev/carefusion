@@ -1,14 +1,13 @@
 ﻿using Carefusion.Entities;
 
-namespace Carefusion.Data.Interfaces
+namespace Carefusion.Data.Interfaces;
+
+public interface IPatientRepository
 {
-    public interface IPatientRepository
-    {
-        Task<Patient> GetByIdAsync(int id);
-        Task<Patient> GetByGovIdAsync(string govId);
-        IQueryable<Patient> GetQuery();
-        Task AddAsync(Patient patient);
-        Task UpdateAsync(Patient patient);
-        Task DeleteAsync(Patient patient);
-    }
+    Task<Patient> GetByIdAsync(int id);
+    Task<Patient> GetByGovIdAsync(string govId);
+    IQueryable<Patient> GetQuery();
+    Task AddAsync(Patient patient);
+    Task UpdateAsync(Patient patient);
+    Task DeleteAsync(Patient patient);
 }

@@ -1,7 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Carefusion.Business.Interfaces;
 using Carefusion.Core;
 using Carefusion.Core.Utilities;
+
 #pragma warning disable CS0168 // Variable is declared but never used
 
 namespace Carefusion.Web.Controllers;
@@ -9,29 +10,29 @@ namespace Carefusion.Web.Controllers;
 /// <inheritdoc />
 [Route("api/v1/[controller]")]
 [ApiController]
-public class PatientsController : ControllerBase
+public class PractitionersController : ControllerBase
 {
-    private readonly IPatientService _patientService;
+    private readonly IPractitionerService _practitionerService;
 
     /// <inheritdoc />
-    public PatientsController(IPatientService patientService)
+    public PractitionersController(IPractitionerService practitionerService)
     {
-        _patientService = patientService;
+        _practitionerService = practitionerService;
     }
 
     /// <summary>
-    /// Finds a patient by ID
+    /// Finds a practitioner by ID
     /// </summary>
     /// <param name="id"></param>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetPatient(int id)
+    public async Task<IActionResult> GetPractitioner(int id)
     {
         try
         {
-            var patient = await _patientService.GetPatientByIdAsync(id);
+            var patient = await _practitionerService.GetPractitionerByIdAsync(id);
             return Ok(patient);
         }
         catch (InvalidOperationException)
@@ -45,18 +46,18 @@ public class PatientsController : ControllerBase
     }
 
     /// <summary>
-    /// Finds a patient by government ID
+    /// Finds a practitioner by government ID
     /// </summary>
     /// <param name="govId"></param>
     [HttpGet("gov/{govId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetPatientByGovId(string govId)
+    public async Task<IActionResult> GetPractitionerByGovId(string govId)
     {
         try
         {
-            var patient = await _patientService.GetPatientByGovId(govId);
+            var patient = await _practitionerService.GetPractitionerByGovId(govId);
             return Ok(patient);
         }
         catch (InvalidOperationException)
@@ -70,16 +71,16 @@ public class PatientsController : ControllerBase
     }
 
     /// <summary>
-    /// Search patients
+    /// Search practitioners
     /// </summary>
     /// <param name="q">Search</param>
     /// <param name="sort"></param>
-    /// <param name="bloodType"></param>
+    /// <param name="title"></param>
+    /// <param name="specialty"></param>
     /// <param name="birthStartDate"></param>
     /// <param name="birthEndDate"></param>
     /// <param name="pageNumber"></param>
     /// <param name="pageSize"></param>
-    /// <param name="showDeceased"></param>
     /// <param name="showInactive"></param>
     /// <param name="gender"></param>
     [HttpGet("search")]
@@ -89,21 +90,21 @@ public class PatientsController : ControllerBase
     public async Task<IActionResult> SearchPatients(
         [FromQuery] string? q,
         [FromQuery] Gender? gender,
-        [FromQuery] BloodType? bloodType,
+        [FromQuery] PractitionerTitle? title,
+        [FromQuery] PractitionerSpecialty? specialty,
         [FromQuery] DateOnly? birthStartDate,
         [FromQuery] DateOnly? birthEndDate,
         [FromQuery] BasicSort? sort,
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 50,
-        [FromQuery] bool showDeceased = false,
         [FromQuery] bool showInactive = false)
     {
         try
         {
-            var (patients, totalCount) = await _patientService.SearchPatientsAsync(q ?? " ", sort, gender, bloodType, birthStartDate, birthEndDate, pageNumber, pageSize, showDeceased, showInactive);
+            var (patients, totalCount) = await _practitionerService.SearchPractitionerAsync(q ?? " ", sort, gender, title, specialty, birthStartDate, birthEndDate, pageNumber, pageSize, showInactive);
             if (totalCount == 0) return NotFound();
 
-            return Ok(new { Patients = patients, TotalCount = totalCount });
+            return Ok(new { Practitioners = patients, TotalCount = totalCount });
         }
         catch (Exception)
         {
@@ -112,14 +113,14 @@ public class PatientsController : ControllerBase
     }
 
     /// <summary>
-    /// Adds a new patient
+    /// Adds a new practitioner
     /// </summary>
     [HttpPost]
     [Authorization.ApiKeyAuth]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> AddPatient([FromBody] PatientDto patientDto)
+    public async Task<IActionResult> AddPatient([FromBody] PractitionerDto practitionerDto)
     {
         if (!ModelState.IsValid)
         {
@@ -128,8 +129,8 @@ public class PatientsController : ControllerBase
 
         try
         {
-            await _patientService.AddPatientAsync(patientDto);
-            return CreatedAtAction(nameof(GetPatient), new { id = patientDto.Identifier }, patientDto);
+            await _practitionerService.AddPractitionerAsync(practitionerDto);
+            return CreatedAtAction(nameof(GetPractitioner), new { id = practitionerDto.Identifier }, practitionerDto);
         }
         catch (Exception ex)
         {
@@ -138,20 +139,20 @@ public class PatientsController : ControllerBase
     }
 
     /// <summary>
-    /// Modifies the patient by ID
+    /// Modifies the practitioner by ID
     /// </summary>
     /// <param name="id"></param>
-    /// <param name="patientDto"></param>
+    /// <param name="practitionerDto"></param>
     [HttpPut("{id}")]
     [Authorization.ApiKeyAuth]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> UpdatePatient(int id, [FromBody] PatientDto patientDto)
+    public async Task<IActionResult> UpdatePractitioner(int id, [FromBody] PractitionerDto practitionerDto)
     {
         try
         {
-            await _patientService.UpdatePatientAsync(id, patientDto);
+            await _practitionerService.UpdatePractitionerAsync(id, practitionerDto);
             return Ok();
         }
         catch (InvalidOperationException)
@@ -163,8 +164,9 @@ public class PatientsController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
+
     /// <summary>
-    /// Deletes a patient by ID
+    /// Deletes a practitioner by ID
     /// </summary>
     /// <param name="id"></param>
     [HttpDelete("{id}")]
@@ -176,7 +178,7 @@ public class PatientsController : ControllerBase
     {
         try
         {
-            var result = await _patientService.DeletePatientAsync(id);
+            var result = await _practitionerService.DeletePractitionerAsync(id);
             return !result ? NotFound() : NoContent();
         }
         catch (Exception ex)
@@ -184,5 +186,4 @@ public class PatientsController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
-
 }

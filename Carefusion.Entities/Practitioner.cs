@@ -2,7 +2,7 @@
 
 namespace Carefusion.Entities;
 
-public class Patient
+public class Practitioner
 {
     [Key]
     public int Identifier { get; init; }
@@ -14,21 +14,21 @@ public class Patient
     [Required]
     [StringLength(25)]
     public required string Gender { get; init; }
-    [Required]
-    [StringLength(3)]
-    public required string BloodType { get; init; }
+    [StringLength(25)]
+    public string? Specialty { get; init; }
+    [StringLength(25)]
+    public string? Title { get; init; }
+    [StringLength(50)]
+    public string? Role { get; init; }
     [Required]
     [StringLength(11)]
     public required string GovernmentId { get; init; }
     [StringLength(1024)]
     public string? Picture { get; init; }
-    public int? AssignedPractitioner { get; init; }
-    [StringLength(50)]
-    public string? HealthcareProvider { get; init; }
+    public int? AssignedHospital { get; init; }
+    public int? AssignedDepartment { get; init; }
     [Required]
     public required bool Active { get; init; }
-    [Required]
-    public required bool Deceased { get; init; }
     public List<Communication>? Communication { get; set; } = [];
     [Required]
     public required DateTime RecordUpdated { get; set; }
