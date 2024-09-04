@@ -60,7 +60,6 @@ namespace Carefusion.Business.Services
             if (bloodType != null)
             {
                 var bloodTypeValue = bloodType.ReadDesc();
-                Console.WriteLine(bloodTypeValue);
                 query = query.Where(p => p.BloodType == bloodTypeValue);
             }
 
@@ -90,7 +89,6 @@ namespace Carefusion.Business.Services
             }
 
             query = sortField is not null ? ApplySorting(query, sortField) : query.OrderBy(p => p.Identifier);
-
             var totalCount = await query.CountAsync();
 
             var patients = await query

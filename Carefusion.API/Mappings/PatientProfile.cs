@@ -10,9 +10,11 @@ namespace Carefusion.Web.Mappings
         public PatientProfile()
         {
             CreateMap<Patient, PatientDto>()
+                .ForMember(dest => dest.Communication, opt => opt.MapFrom(src => src.Communication))
                 .ReverseMap()
                 .ForMember(dest => dest.Identifier, opt => opt.Ignore())
                 .ForMember(dest => dest.RecordUpdated, opt => opt.Ignore());
+            CreateMap<Communication, CommunicationDto>().ReverseMap();
         }
     }
 }

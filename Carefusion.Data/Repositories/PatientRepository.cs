@@ -9,17 +9,45 @@ namespace Carefusion.Data.Repositories
     {
         public async Task<Patient> GetByIdAsync(int id)
         {
-            return await context.Patients.FindAsync(id) ?? throw new InvalidOperationException();
+            var patient = await context.Patients.FindAsync(id);
+            if (patient == null)
+                throw new InvalidOperationException("Cannot find the patient.");
+            var commInfo = await context.Communications
+                .Where(c => c.PatientIdentifier == id)
+                .ToListAsync();
+            if (commInfo.Count > 0)
+                patient.Communication = commInfo;
+
+            return patient;
         }
 
         public async Task<Patient> GetByGovIdAsync(string govId)
         {
-            return await context.Patients.FirstOrDefaultAsync(p => p.GovernmentId == govId) ?? throw new InvalidOperationException();
+            return await context.Patients.FirstOrDefaultAsync(p => p.GovernmentId == govId) ??
+                   throw new InvalidOperationException();
         }
 
         public IQueryable<Patient> GetQuery()
         {
-            return context.Patients.AsNoTracking();
+            return context.Patients
+                .Select(p => new Patient
+                {
+                    Identifier = p.Identifier,
+                    Name = p.Name,
+                    BirthDate = p.BirthDate,
+                    Gender = p.Gender,
+                    BloodType = p.BloodType,
+                    GovernmentId = p.GovernmentId,
+                    Picture = p.Picture,
+                    AssignedPractitioner = p.AssignedPractitioner,
+                    HealthcareProvider = p.HealthcareProvider,
+                    Active = p.Active,
+                    Deceased = p.Deceased,
+                    RecordUpdated = p.RecordUpdated,
+                    Communication = context.Communications
+                        .Where(c => c.PatientIdentifier == p.Identifier)
+                        .ToList()
+                });
         }
 
         public async Task AddAsync(Patient patient)
@@ -40,6 +68,7 @@ namespace Carefusion.Data.Repositories
                 throw new InvalidOperationException("Cannot find hospital or it never existed.");
             }
         }
+
         public async Task DeleteAsync(Patient patient)
         {
             try
@@ -52,11 +81,5 @@ namespace Carefusion.Data.Repositories
                 throw new InvalidOperationException("Cannot delete the hospital because it has related departments.");
             }
         }
-
-        public async Task<List<Patient>> GetAllAsync()
-        {
-            return await context.Patients.ToListAsync();
-        }
-
     }
 }

@@ -29,6 +29,7 @@ namespace Carefusion.Entities
         public required bool Active { get; init; }
         [Required]
         public required bool Deceased { get; init; }
+        public List<Communication>? Communication { get; set; } = [];
         [Required]
         public required DateTime RecordUpdated { get; set; }
     }

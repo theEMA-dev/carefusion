@@ -37,6 +37,7 @@ namespace Carefusion.Core
         [Required]
         [DefaultValue(false)]
         public required bool Deceased { get; init; }
+        public List<CommunicationDto>? Communication { get; init; }
         public int Id => Identifier;
     }
 }

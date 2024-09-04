@@ -7,5 +7,6 @@ namespace Carefusion.Data
     {
         public DbSet<Patient> Patients { get; init; }
         public DbSet<Hospital> Hospitals { get; init; }
+        public DbSet<Communication> Communications { get; init; }
     }
 }
