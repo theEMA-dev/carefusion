@@ -2,7 +2,6 @@
 using Carefusion.Business.Interfaces;
 using Carefusion.Core;
 using Carefusion.Core.Utilities;
-
 #pragma warning disable CS0168 // Variable is declared but never used
 
 namespace Carefusion.Web.Controllers;
@@ -13,11 +12,13 @@ namespace Carefusion.Web.Controllers;
 public class PractitionersController : ControllerBase
 {
     private readonly IPractitionerService _practitionerService;
+    private readonly IHospitalService _hospitalService;
 
     /// <inheritdoc />
-    public PractitionersController(IPractitionerService practitionerService)
+    public PractitionersController(IPractitionerService practitionerService, IHospitalService hospitalService)
     {
         _practitionerService = practitionerService;
+        _hospitalService = hospitalService;
     }
 
     /// <summary>
@@ -32,8 +33,10 @@ public class PractitionersController : ControllerBase
     {
         try
         {
-            var patient = await _practitionerService.GetPractitionerByIdAsync(id);
-            return Ok(patient);
+            var practitioner = await _practitionerService.GetPractitionerByIdAsync(id);
+            var assignedHospital = await _hospitalService.GetHospitalNameById(practitioner.AssignedHospitalId) ?? null;
+            practitioner.HospitalName = assignedHospital;
+            return Ok(practitioner);
         }
         catch (InvalidOperationException)
         {
@@ -57,8 +60,10 @@ public class PractitionersController : ControllerBase
     {
         try
         {
-            var patient = await _practitionerService.GetPractitionerByGovId(govId);
-            return Ok(patient);
+            var practitioner = await _practitionerService.GetPractitionerByGovId(govId);
+            var assignedHospital = await _hospitalService.GetHospitalNameById(practitioner.AssignedHospitalId) ?? null;
+            practitioner.HospitalName = assignedHospital;
+            return Ok(practitioner);
         }
         catch (InvalidOperationException)
         {
@@ -101,10 +106,17 @@ public class PractitionersController : ControllerBase
     {
         try
         {
-            var (patients, totalCount) = await _practitionerService.SearchPractitionerAsync(q ?? " ", sort, gender, title, specialty, birthStartDate, birthEndDate, pageNumber, pageSize, showInactive);
+            var (practitioners, totalCount) = await _practitionerService.SearchPractitionerAsync(q ?? " ", sort, gender, title, specialty, birthStartDate, birthEndDate, pageNumber, pageSize, showInactive);
             if (totalCount == 0) return NotFound();
 
-            return Ok(new { Practitioners = patients, TotalCount = totalCount });
+            var practitionerDtos = practitioners.ToList();
+            foreach (var practitioner in practitionerDtos)
+            {
+                var assignedHospital = await _hospitalService.GetHospitalNameById(practitioner.AssignedHospitalId) ?? null;
+                practitioner.HospitalName = assignedHospital;
+            }
+
+            return Ok(new { Practitioners = practitionerDtos, TotalCount = totalCount });
         }
         catch (Exception)
         {

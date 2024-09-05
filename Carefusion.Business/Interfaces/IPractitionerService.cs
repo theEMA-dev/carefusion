@@ -12,4 +12,5 @@ public interface IPractitionerService
     Task AddPractitionerAsync(PractitionerDto practitionerDto);
     Task UpdatePractitionerAsync(int id, PractitionerDto practitionerDto);
     Task<bool> DeletePractitionerAsync(int id);
+    Task<string?> GetPractitionerNameById(int? id);
 }

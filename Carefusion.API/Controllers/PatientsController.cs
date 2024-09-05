@@ -12,11 +12,13 @@ namespace Carefusion.Web.Controllers;
 public class PatientsController : ControllerBase
 {
     private readonly IPatientService _patientService;
+    private readonly IPractitionerService _practitionerService;
 
     /// <inheritdoc />
-    public PatientsController(IPatientService patientService)
+    public PatientsController(IPatientService patientService, IPractitionerService practitionerService)
     {
         _patientService = patientService;
+        _practitionerService = practitionerService;
     }
 
     /// <summary>
@@ -32,6 +34,8 @@ public class PatientsController : ControllerBase
         try
         {
             var patient = await _patientService.GetPatientByIdAsync(id);
+            var assignedPractitioner = await _practitionerService.GetPractitionerNameById(patient.AssignedPractitionerId) ?? null;
+            patient.PractitionerName = assignedPractitioner;
             return Ok(patient);
         }
         catch (InvalidOperationException)
@@ -57,6 +61,8 @@ public class PatientsController : ControllerBase
         try
         {
             var patient = await _patientService.GetPatientByGovId(govId);
+            var assignedPractitioner = await _practitionerService.GetPractitionerNameById(patient.AssignedPractitionerId) ?? null;
+            patient.PractitionerName = assignedPractitioner;
             return Ok(patient);
         }
         catch (InvalidOperationException)
@@ -103,7 +109,14 @@ public class PatientsController : ControllerBase
             var (patients, totalCount) = await _patientService.SearchPatientsAsync(q ?? " ", sort, gender, bloodType, birthStartDate, birthEndDate, pageNumber, pageSize, showDeceased, showInactive);
             if (totalCount == 0) return NotFound();
 
-            return Ok(new { Patients = patients, TotalCount = totalCount });
+            var patientDtos = patients.ToList();
+            foreach (var patient in patientDtos)
+            {
+                var assignedPractitioner = await _practitionerService.GetPractitionerNameById(patient.AssignedPractitionerId) ?? null;
+                patient.PractitionerName = assignedPractitioner;
+            }
+
+            return Ok(new { Patients = patientDtos, TotalCount = totalCount });
         }
         catch (Exception)
         {

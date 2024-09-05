@@ -22,7 +22,7 @@ public class Patient
     public required string GovernmentId { get; init; }
     [StringLength(1024)]
     public string? Picture { get; init; }
-    public int? AssignedPractitioner { get; init; }
+    public int? AssignedPractitionerId { get; init; }
     [StringLength(50)]
     public string? HealthcareProvider { get; init; }
     [Required]

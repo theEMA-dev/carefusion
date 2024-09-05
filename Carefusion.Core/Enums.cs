@@ -66,32 +66,30 @@ public enum PractitionerTitle
     deputyChiefPhysician,
     [Description("Sr. Asst.")]
     seniorAssistant,
-    [Description("MD")]
-    medicalDr
+    [Description("Dr.")]
+    dr
 }
-
 public enum PractitionerSpecialty
 {
-    neurologist,
-    specialist,
-    radiologist,
-    cardiologist,
-    surgeon,
-    internist,
-    pathologist,
-    endocrinologist,
-    psychiatrist,
-    oncologist,
-    dermatologist,
-    orthopedic,
-    pulmonologist,
-    nephrologist,
-    hematologist,
-    obstetrician,
-    gynecologist,
-    urologist,
-    anesthesiologist,
-    rheumatologist,
-    allergist,
-    geriatrician
+    neurology,
+    specialty,
+    radiology,
+    cardiology,
+    surgery,
+    pathology,
+    endocrinology,
+    psychiatry,
+    oncology,
+    dermatology,
+    orthopedics,
+    pulmonology,
+    nephrology,
+    hematology,
+    obstetrics,
+    gynecology,
+    urology,
+    anesthesiology,
+    rheumatology,
+    allergy,
+    geriatrics
 }

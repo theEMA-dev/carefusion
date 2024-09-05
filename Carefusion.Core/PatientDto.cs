@@ -27,7 +27,11 @@ public class PatientDto
     [StringLength(1024)]
     public string? Picture { get; init; }
     [DefaultValue(null)]
-    public int? AssignedPractitioner { get; init; }
+    public int? AssignedPractitionerId { get; init; }
+    [DefaultValue(null)]
+    [JsonIgnore]
+    public string? PractitionerName { get; set; }
+    public string? AssignedPractitioner => PractitionerName;
     [DefaultValue(null)]
     [StringLength(50)]
     public string? HealthcareProvider { get; init; }

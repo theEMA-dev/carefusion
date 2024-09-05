@@ -139,4 +139,15 @@ public class PractitionerService : IPractitionerService
         await _practitionerRepository.DeleteAsync(practitioner);
         return true;
     }
+
+    public async Task<string?> GetPractitionerNameById(int? id)
+    {
+        if (id == null)
+        {
+            return null;
+        }
+
+        var practitioner = await _practitionerRepository.GetByIdAsync(id.Value);
+        return practitioner.Title + " " + practitioner.Name;
+    }
 }

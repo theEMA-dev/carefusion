@@ -9,4 +9,5 @@ public interface IHospitalService
     Task AddHospitalAsync(HospitalDto hospitalDto);
     Task UpdateHospitalAsync(int id, HospitalDto hospitalDto);
     Task<bool> DeleteHospitalAsync(int id);
+    Task<string?> GetHospitalNameById(int? id);
 }

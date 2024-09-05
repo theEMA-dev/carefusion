@@ -17,12 +17,12 @@ public class PractitionerDto
     [Required]
     [StringLength(25)]
     public required string Gender { get; init; }
+    [Required]
     [StringLength(25)]
-    [DefaultValue(null)]
-    public string? Specialty { get; init; }
+    public required string Specialty { get; init; }
+    [Required]
     [StringLength(25)]
-    [DefaultValue(null)]
-    public string? Title { get; init; }
+    public required string Title { get; init; }
     [StringLength(50)]
     [DefaultValue(null)]
     public string? Role { get; init; }
@@ -33,9 +33,13 @@ public class PractitionerDto
     [DefaultValue(null)]
     public string? Picture { get; init; }
     [DefaultValue(null)]
-    public int? AssignedHospital { get; init; }
+    public int? AssignedHospitalId { get; init; }
     [DefaultValue(null)]
-    public int? AssignedDepartment { get; init; }
+    [JsonIgnore]
+    public string? HospitalName { get; set; }
+    public string? AssignedHospital => HospitalName;
+    [DefaultValue(null)]
+    public int? AssignedDepartmentId { get; init; }
     [Required]
     [DefaultValue(true)]
     public required bool Active { get; init; }

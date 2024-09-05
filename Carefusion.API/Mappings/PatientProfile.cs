@@ -14,6 +14,10 @@ public class PatientProfile : Profile
             .ReverseMap()
             .ForMember(dest => dest.Identifier, opt => opt.Ignore())
             .ForMember(dest => dest.RecordUpdated, opt => opt.Ignore());
+
+        CreateMap<PatientDto, PatientDto>()
+            .ForMember(dest => dest.AssignedPractitioner, opt => opt.Ignore());
+        
         CreateMap<Communication, CommunicationDto>().ReverseMap();
     }
 }

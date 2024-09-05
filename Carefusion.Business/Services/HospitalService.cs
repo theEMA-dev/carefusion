@@ -110,4 +110,16 @@ public class HospitalService : IHospitalService
         await _hospitalRepository.DeleteAsync(hospital);
         return true;
     }
+
+    public async Task<string?> GetHospitalNameById(int? id)
+    {
+        if (id == null)
+        {
+            return null;
+        }
+
+        var hospital = await _hospitalRepository.GetByIdAsync(id.Value);
+        Console.WriteLine(hospital.Name);
+        return hospital.Name;
+    }
 }

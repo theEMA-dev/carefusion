@@ -47,7 +47,7 @@ public class PatientRepository(ApplicationDbContext context) : IPatientRepositor
                 BloodType = p.BloodType,
                 GovernmentId = p.GovernmentId,
                 Picture = p.Picture,
-                AssignedPractitioner = p.AssignedPractitioner,
+                AssignedPractitionerId = p.AssignedPractitionerId,
                 HealthcareProvider = p.HealthcareProvider,
                 Active = p.Active,
                 Deceased = p.Deceased,

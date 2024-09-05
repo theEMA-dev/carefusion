@@ -48,8 +48,8 @@ public class PractitionerRepository(ApplicationDbContext context) : IPractitione
                 Role = p.Role,
                 GovernmentId = p.GovernmentId,
                 Picture = p.Picture,
-                AssignedHospital = p.AssignedHospital,
-                AssignedDepartment = p.AssignedDepartment,
+                AssignedHospitalId = p.AssignedHospitalId,
+                AssignedDepartmentId = p.AssignedDepartmentId,
                 Active = p.Active,
                 RecordUpdated = p.RecordUpdated,
                 Communication = context.Communications
