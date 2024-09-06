@@ -28,4 +28,5 @@ public class CommunicationDto
     [StringLength(255)]
     [DefaultValue(null)]
     public string? Note { get; init; }
+    public int DebugCommunicationId => Identifier;
 }

@@ -40,9 +40,13 @@ public class PractitionerDto
     public string? AssignedHospital => HospitalName;
     [DefaultValue(null)]
     public int? AssignedDepartmentId { get; init; }
+    [DefaultValue(null)]
+    [JsonIgnore]
+    public string? DepartmentName { get; set; }
+    public string? AssignedDepartment => DepartmentName;
     [Required]
     [DefaultValue(true)]
     public required bool Active { get; init; }
     public List<CommunicationDto>? Communication { get; init; } = [];
-    public int Id => Identifier;
+    public int DebugPractitionerId => Identifier;
 }

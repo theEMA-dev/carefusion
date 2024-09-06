@@ -41,6 +41,8 @@ public class Startup
         services.AddScoped<IPractitionerService, PractitionerService>();
         services.AddScoped<IHospitalRepository, HospitalRepository>();
         services.AddScoped<IHospitalService, HospitalService>();
+        services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+        services.AddScoped<IDepartmentService, DepartmentService>();
 
         services.AddControllers()
             .AddJsonOptions(options =>

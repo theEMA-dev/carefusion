@@ -1,22 +1,24 @@
 ﻿using AutoMapper;
 using Carefusion.Business.Interfaces;
-using Carefusion.Entities;
 using Carefusion.Core;
-using Carefusion.Data.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using Carefusion.Core.Utilities;
+using Carefusion.Data.Interfaces;
+using Carefusion.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Carefusion.Business.Services;
 
 public class PatientService : IPatientService
 {
     private readonly IPatientRepository _patientRepository;
+    private readonly IPractitionerService _practitionerService;
     private readonly IMapper _mapper;
     private readonly TimeZoneInfo _timeZone;
 
-    public PatientService(IPatientRepository patientRepository, IMapper mapper)
+    public PatientService(IPatientRepository patientRepository, IPractitionerService practitionerService, IMapper mapper)
     {
         _patientRepository = patientRepository;
+        _practitionerService = practitionerService;
         _mapper = mapper;
         _timeZone = TimeZoneInfo.FindSystemTimeZoneById("Turkey Standard Time");
     }
@@ -24,13 +26,17 @@ public class PatientService : IPatientService
     public async Task<PatientDto> GetPatientByIdAsync(int id)
     {
         var patient = await _patientRepository.GetByIdAsync(id);
-        return _mapper.Map<PatientDto>(patient);
+        var patientDto = _mapper.Map<PatientDto>(patient);
+        patientDto.PractitionerName = await _practitionerService.GetPractitionerNameById(patient.AssignedPractitionerId);
+        return patientDto;
     }
 
     public async Task<PatientDto> GetPatientByGovId(string govId)
     {
         var patient = await _patientRepository.GetByGovIdAsync(govId);
-        return _mapper.Map<PatientDto>(patient);
+        var patientDto = _mapper.Map<PatientDto>(patient);
+        patientDto.PractitionerName = await _practitionerService.GetPractitionerNameById(patient.AssignedPractitionerId);
+        return patientDto;
     }
 
     public async Task<(IEnumerable<PatientDto> Patients, int TotalCount)> SearchPatientsAsync(
@@ -97,9 +103,15 @@ public class PatientService : IPatientService
             .ToListAsync();
 
         var patientDtos = _mapper.Map<IEnumerable<PatientDto>>(patients);
-        return (patientDtos, totalCount);
-    }
 
+        var enumerable = patientDtos.ToList();
+        foreach (var patientDto in enumerable)
+        {
+            patientDto.PractitionerName = await _practitionerService.GetPractitionerNameById(patientDto.AssignedPractitionerId);
+        }
+
+        return (enumerable, totalCount);
+    }
 
     private static IQueryable<Patient> ApplySorting(IQueryable<Patient> query, BasicSort? sortField)
     {

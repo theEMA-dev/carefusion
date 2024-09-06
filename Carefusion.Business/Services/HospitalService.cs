@@ -10,12 +10,14 @@ namespace Carefusion.Business.Services;
 public class HospitalService : IHospitalService
 {
     private readonly IHospitalRepository _hospitalRepository;
+    private readonly IDepartmentService _departmentService;
     private readonly IMapper _mapper;
     private readonly TimeZoneInfo _timeZone;
 
-    public HospitalService(IHospitalRepository hospitalRepository, IMapper mapper)
+    public HospitalService(IHospitalRepository hospitalRepository, IDepartmentService departmentService, IMapper mapper)
     {
         _hospitalRepository = hospitalRepository;
+        _departmentService = departmentService;
         _mapper = mapper;
         _timeZone = TimeZoneInfo.FindSystemTimeZoneById("Turkey Standard Time");
     }
@@ -23,6 +25,14 @@ public class HospitalService : IHospitalService
     public async Task<HospitalDto> GetHospitalByIdAsync(int id)
     {
         var hospital = await _hospitalRepository.GetByIdAsync(id);
+
+        // Assuming GetDepartments returns a collection of Department entities
+        var departments = await _departmentService.GetDepartments(id);
+
+        // Check if departments needs to be mapped to DTOs
+        if (_mapper.Map<List<DepartmentDto>>(departments).Count > 0)
+            hospital.Departments = _mapper.Map<List<Department>>(departments);  // Map to the appropriate DTO type
+
         return _mapper.Map<HospitalDto>(hospital);
     }
 
@@ -65,6 +75,14 @@ public class HospitalService : IHospitalService
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
+
+        foreach (var hospital in hospitals)
+        {
+            var departments = await _departmentService.GetDepartments(hospital.Identifier);
+
+            if (_mapper.Map<List<DepartmentDto>>(departments).Count > 0)
+                hospital.Departments = _mapper.Map<List<Department>>(departments);
+        }
 
         var hospitalDtos = _mapper.Map<IEnumerable<HospitalDto>>(hospitals);
         return (hospitalDtos, totalCount);
@@ -119,7 +137,6 @@ public class HospitalService : IHospitalService
         }
 
         var hospital = await _hospitalRepository.GetByIdAsync(id.Value);
-        Console.WriteLine(hospital.Name);
         return hospital.Name;
     }
 }

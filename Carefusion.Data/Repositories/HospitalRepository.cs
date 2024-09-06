@@ -8,7 +8,7 @@ namespace Carefusion.Data.Repositories;
 public class HospitalRepository(ApplicationDbContext context) : IHospitalRepository
 {
     public async Task<Hospital> GetByIdAsync(int id)
-    {
+    { 
         return await context.Hospitals.FindAsync(id) ?? throw new InvalidOperationException("Cannot find the hospital.");
     }
 

@@ -13,12 +13,14 @@ public class PractitionersController : ControllerBase
 {
     private readonly IPractitionerService _practitionerService;
     private readonly IHospitalService _hospitalService;
+    private readonly IDepartmentService _departmentService;
 
     /// <inheritdoc />
-    public PractitionersController(IPractitionerService practitionerService, IHospitalService hospitalService)
+    public PractitionersController(IPractitionerService practitionerService, IHospitalService hospitalService, IDepartmentService departmentService)
     {
         _practitionerService = practitionerService;
         _hospitalService = hospitalService;
+        _departmentService = departmentService;
     }
 
     /// <summary>
@@ -35,7 +37,10 @@ public class PractitionersController : ControllerBase
         {
             var practitioner = await _practitionerService.GetPractitionerByIdAsync(id);
             var assignedHospital = await _hospitalService.GetHospitalNameById(practitioner.AssignedHospitalId) ?? null;
+            var assignedDepartment =
+                await _departmentService.GetDepartmentNameById(practitioner.AssignedDepartmentId) ?? null;
             practitioner.HospitalName = assignedHospital;
+            practitioner.DepartmentName = assignedDepartment;
             return Ok(practitioner);
         }
         catch (InvalidOperationException)
@@ -62,7 +67,10 @@ public class PractitionersController : ControllerBase
         {
             var practitioner = await _practitionerService.GetPractitionerByGovId(govId);
             var assignedHospital = await _hospitalService.GetHospitalNameById(practitioner.AssignedHospitalId) ?? null;
+            var assignedDepartment =
+                await _departmentService.GetDepartmentNameById(practitioner.AssignedDepartmentId) ?? null;
             practitioner.HospitalName = assignedHospital;
+            practitioner.DepartmentName = assignedDepartment;
             return Ok(practitioner);
         }
         catch (InvalidOperationException)
@@ -92,7 +100,7 @@ public class PractitionersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> SearchPatients(
+    public async Task<IActionResult> SearchPractitioners(
         [FromQuery] string? q,
         [FromQuery] Gender? gender,
         [FromQuery] PractitionerTitle? title,
@@ -113,7 +121,10 @@ public class PractitionersController : ControllerBase
             foreach (var practitioner in practitionerDtos)
             {
                 var assignedHospital = await _hospitalService.GetHospitalNameById(practitioner.AssignedHospitalId) ?? null;
+                var assignedDepartment =
+                    await _departmentService.GetDepartmentNameById(practitioner.AssignedDepartmentId) ?? null;
                 practitioner.HospitalName = assignedHospital;
+                practitioner.DepartmentName = assignedDepartment;
             }
 
             return Ok(new { Practitioners = practitionerDtos, TotalCount = totalCount });
@@ -132,7 +143,7 @@ public class PractitionersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> AddPatient([FromBody] PractitionerDto practitionerDto)
+    public async Task<IActionResult> AddPractitioner([FromBody] PractitionerDto practitionerDto)
     {
         if (!ModelState.IsValid)
         {

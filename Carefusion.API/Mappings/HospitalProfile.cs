@@ -10,6 +10,7 @@ public class HospitalProfile : Profile
     public HospitalProfile()
     {
         CreateMap<Hospital, HospitalDto>()
+            .ForMember(dest => dest.Departments, opt => opt.MapFrom(src => src.Departments))
             .ReverseMap()
             .ForMember(dest => dest.Identifier, opt => opt.Ignore())
             .ForMember(dest => dest.RecordUpdated, opt => opt.Ignore());

@@ -41,5 +41,6 @@ public class HospitalDto
     public string? FaxNumber { get; init; }
     [Required]
     public required bool Active { get; init; }
-    public int Id => Identifier;
+    public List<DepartmentDto>? Departments { get; init; }
+    public int DebugHospitalId => Identifier;
 }

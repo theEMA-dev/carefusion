@@ -39,6 +39,7 @@ public class Hospital
     public string? FaxNumber { get; init; }
     [Required]
     public required bool Active { get; init; }
+    public List<Department>? Departments { get; set; } = [];
     [Required]
     public required DateTime RecordUpdated { get; set; }
 }

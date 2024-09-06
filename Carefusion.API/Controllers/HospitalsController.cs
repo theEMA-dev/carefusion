@@ -12,11 +12,13 @@ namespace Carefusion.Web.Controllers;
 public class HospitalsController : ControllerBase
 {
     private readonly IHospitalService _hospitalService;
+    private readonly IDepartmentService _departmentService;
 
     /// <inheritdoc />
-    public HospitalsController(IHospitalService hospitalService)
+    public HospitalsController(IHospitalService hospitalService, IDepartmentService departmentService)
     {
         _hospitalService = hospitalService;
+        _departmentService = departmentService;
     }
 
     /// <summary>
@@ -108,7 +110,7 @@ public class HospitalsController : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <param name="hospitalDto"></param>
-    [HttpPut("{id}")]
+    [HttpPut("{id:int}")]
     [Authorization.ApiKeyAuth]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -133,7 +135,7 @@ public class HospitalsController : ControllerBase
     /// Deletes a hospital by ID
     /// </summary>
     /// <param name="id"></param>
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:int}")]
     [Authorization.ApiKeyAuth]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -156,5 +158,74 @@ public class HospitalsController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Adds a department to a hospital
+    /// </summary>
+    /// <param name="id">Enter Hospital ID:</param>
+    /// <param name="departmentDto"></param>
+    /// <returns></returns>
+    [HttpPost("department/{id:int}")]
+    [Authorization.ApiKeyAuth]
+    public async Task<IActionResult> AddDepartment(int id, [FromBody] DepartmentDto departmentDto)
+    {
+        try
+        {
+            await _departmentService.AddDepartmentAsync(id, departmentDto);
+            return CreatedAtAction(nameof(GetHospital), new { id = departmentDto.Identifier }, departmentDto);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
 
+    /// <summary>
+    /// Updates a department by ID
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="departmentDto"></param>
+    /// <returns></returns>
+    [HttpPut("department/{id:int}")]
+    [Authorization.ApiKeyAuth]
+    public async Task<IActionResult> UpdateDepartment(int id, [FromBody] DepartmentDto departmentDto)
+    {
+        try
+        {
+            await _departmentService.UpdateDepartmentAsync(id, departmentDto);
+            return Ok();
+        }
+        catch (InvalidOperationException)
+        {
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while updating the department.");
+        }
+    }
+
+    /// <summary>
+    /// Deletes a department by ID
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpDelete("department/{id:int}")]
+    public async Task<IActionResult> DeleteDepartment(int id)
+    {
+        try
+        {
+            var result = await _departmentService.DeleteDepartmentAsync(id);
+            if (!result)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
 }

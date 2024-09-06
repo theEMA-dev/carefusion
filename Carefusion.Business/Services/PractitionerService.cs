@@ -11,12 +11,14 @@ namespace Carefusion.Business.Services;
 public class PractitionerService : IPractitionerService
 {
     private readonly IPractitionerRepository _practitionerRepository;
+    private readonly IHospitalService _hospitalService;
     private readonly IMapper _mapper;
     private readonly TimeZoneInfo _timeZone;
 
-    public PractitionerService(IPractitionerRepository practitionerRepository, IMapper mapper)
+    public PractitionerService(IPractitionerRepository practitionerRepository, IHospitalService hospitalService, IMapper mapper)
     {
         _practitionerRepository = practitionerRepository;
+        _hospitalService = hospitalService;
         _mapper = mapper;
         _timeZone = TimeZoneInfo.FindSystemTimeZoneById("Turkey Standard Time");
     }
@@ -24,13 +26,27 @@ public class PractitionerService : IPractitionerService
     public async Task<PractitionerDto> GetPractitionerByIdAsync(int id)
     {
         var practitioner = await _practitionerRepository.GetByIdAsync(id);
-        return _mapper.Map<PractitionerDto>(practitioner);
+        if (practitioner == null)
+        {
+            throw new InvalidOperationException("Practitioner not found");
+        }
+
+        var practitionerDto = _mapper.Map<PractitionerDto>(practitioner);
+        practitionerDto.HospitalName = await _hospitalService.GetHospitalNameById(practitionerDto.AssignedHospitalId);
+        return practitionerDto;
     }
 
     public async Task<PractitionerDto> GetPractitionerByGovId(string govId)
     {
         var practitioner = await _practitionerRepository.GetByGovIdAsync(govId);
-        return _mapper.Map<PractitionerDto>(practitioner);
+        if (practitioner == null)
+        {
+            throw new InvalidOperationException("Practitioner not found");
+        }
+
+        var practitionerDto = _mapper.Map<PractitionerDto>(practitioner);
+        practitionerDto.HospitalName = await _hospitalService.GetHospitalNameById(practitionerDto.AssignedHospitalId);
+        return practitionerDto;
     }
 
     public async Task<(IEnumerable<PractitionerDto> Practitioners, int TotalCount)> SearchPractitionerAsync(
@@ -97,9 +113,15 @@ public class PractitionerService : IPractitionerService
             .ToListAsync();
 
         var practitionerDtos = _mapper.Map<IEnumerable<PractitionerDto>>(practitioners);
-        return (practitionerDtos, totalCount);
-    }
 
+        IEnumerable<PractitionerDto> enumerable = practitionerDtos.ToList();
+        foreach (var practitionerDto in enumerable)
+        {
+            practitionerDto.HospitalName = await _hospitalService.GetHospitalNameById(practitionerDto.AssignedHospitalId);
+        }
+
+        return (enumerable, totalCount);
+    }
 
     private static IQueryable<Practitioner> ApplySorting(IQueryable<Practitioner> query, BasicSort? sortField)
     {
@@ -117,6 +139,7 @@ public class PractitionerService : IPractitionerService
     {
         var practitioner = _mapper.Map<Practitioner>(practitionerDto);
         practitioner.RecordUpdated = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, _timeZone);
+        await _practitionerRepository.UpdateDepartmentRelation(practitioner.Identifier);
         await _practitionerRepository.AddAsync(practitioner);
     }
 
@@ -125,17 +148,24 @@ public class PractitionerService : IPractitionerService
         var practitioner = await _practitionerRepository.GetByIdAsync(id);
         if (practitioner == null)
         {
-            throw new InvalidOperationException();
+            throw new InvalidOperationException("Practitioner not found");
         }
 
         _mapper.Map(practitionerDto, practitioner);
         practitioner.RecordUpdated = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, _timeZone);
+        await _practitionerRepository.UpdateDepartmentRelation(practitioner.Identifier);
         await _practitionerRepository.UpdateAsync(practitioner);
     }
 
     public async Task<bool> DeletePractitionerAsync(int id)
     {
         var practitioner = await _practitionerRepository.GetByIdAsync(id);
+        if (practitioner == null)
+        {
+            throw new InvalidOperationException("Practitioner not found");
+        }
+
+        await _practitionerRepository.UpdateDepartmentRelation(practitioner.Identifier);
         await _practitionerRepository.DeleteAsync(practitioner);
         return true;
     }

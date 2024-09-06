@@ -10,4 +10,5 @@ public interface IPractitionerRepository
     Task AddAsync(Practitioner practitioner);
     Task UpdateAsync(Practitioner practitioner);
     Task DeleteAsync(Practitioner practitioner);
+    Task UpdateDepartmentRelation(int id);
 }

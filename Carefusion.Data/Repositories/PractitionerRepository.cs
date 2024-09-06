@@ -94,4 +94,20 @@ public class PractitionerRepository(ApplicationDbContext context) : IPractitione
             throw new InvalidOperationException("Cannot delete the practitioner.");
         }
     }
+
+    public async Task UpdateDepartmentRelation(int id)
+    {
+        var practitioner = await GetByIdAsync(id);
+        var department = await context.Departments.FindAsync(practitioner.AssignedDepartmentId);
+        var count = await context.Practitioners.CountAsync(p => department != null && p.AssignedDepartmentId == department.Identifier);
+
+        if (department != null)
+        {
+            department.RegisteredPractitioners = count;
+
+            context.Departments.Update(department);
+
+            await context.SaveChangesAsync();
+        }
+    }
 }
