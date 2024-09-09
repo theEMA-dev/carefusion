@@ -1,4 +1,4 @@
-﻿using Carefusion.Entities;
+﻿using Carefusion.Core.Entities;
 
 namespace Carefusion.Data.Interfaces;
 

@@ -13,7 +13,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Carefusion.Core\Carefusion.Core.csproj" />
     <ProjectReference Include="..\Carefusion.Data\Carefusion.Data.csproj" />
-    <ProjectReference Include="..\Carefusion.Entities\Carefusion.Entities.csproj" />
   </ItemGroup>
 
 </Project>

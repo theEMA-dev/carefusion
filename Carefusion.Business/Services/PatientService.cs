@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
 using Carefusion.Business.Interfaces;
 using Carefusion.Core;
+using Carefusion.Core.DTOs;
+using Carefusion.Core.Entities;
 using Carefusion.Core.Utilities;
 using Carefusion.Data.Interfaces;
-using Carefusion.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Carefusion.Business.Services;

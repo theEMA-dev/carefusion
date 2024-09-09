@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Carefusion.Core;
+namespace Carefusion.Core.DTOs;
 
 public class PatientDto
 {

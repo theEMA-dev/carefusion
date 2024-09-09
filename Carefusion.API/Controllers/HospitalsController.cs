@@ -1,7 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
 using Carefusion.Business.Interfaces;
 using Carefusion.Core;
+using Carefusion.Core.DTOs;
 using Carefusion.Core.Utilities;
+using Microsoft.AspNetCore.Mvc;
 #pragma warning disable CS0168 // Variable is declared but never used
 
 namespace Carefusion.Web.Controllers;
@@ -159,12 +160,36 @@ public class HospitalsController : ControllerBase
     }
 
     /// <summary>
+    /// Get departments by hospital ID
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpGet("{id:int}/department")]
+    public async Task<IActionResult> GetDepartments(int id)
+    {
+        try
+        {
+            var hospitalName = await _hospitalService.GetHospitalNameById(id);
+            var departments = await _departmentService.GetDepartments(id);
+            return Ok(new { HospitalName = hospitalName, Departments = departments});
+        }
+        catch (InvalidOperationException)
+        {
+            return NotFound(new { });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+
+    /// <summary>
     /// Adds a department to a hospital
     /// </summary>
     /// <param name="id">Enter Hospital ID:</param>
     /// <param name="departmentDto"></param>
     /// <returns></returns>
-    [HttpPost("department/{id:int}")]
+    [HttpPost("{id:int}/department")]
     [Authorization.ApiKeyAuth]
     public async Task<IActionResult> AddDepartment(int id, [FromBody] DepartmentDto departmentDto)
     {
@@ -186,7 +211,7 @@ public class HospitalsController : ControllerBase
     /// <param name="id"></param>
     /// <param name="departmentDto"></param>
     /// <returns></returns>
-    [HttpPut("department/{id:int}")]
+    [HttpPut("{id:int}/department")]
     [Authorization.ApiKeyAuth]
     public async Task<IActionResult> UpdateDepartment(int id, [FromBody] DepartmentDto departmentDto)
     {
@@ -210,7 +235,8 @@ public class HospitalsController : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    [HttpDelete("department/{id:int}")]
+    [HttpDelete("{id:int}/department")]
+    [Authorization.ApiKeyAuth]
     public async Task<IActionResult> DeleteDepartment(int id)
     {
         try

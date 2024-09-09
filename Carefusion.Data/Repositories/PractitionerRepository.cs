@@ -1,5 +1,5 @@
-﻿using Carefusion.Data.Interfaces;
-using Carefusion.Entities;
+﻿using Carefusion.Core.Entities;
+using Carefusion.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Carefusion.Data.Repositories;

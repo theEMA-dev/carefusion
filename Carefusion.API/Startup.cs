@@ -1,14 +1,13 @@
 ﻿using System.Reflection;
-using Microsoft.EntityFrameworkCore;
-using Carefusion.Data;
-using Carefusion.Data.Repositories;
+using System.Text.Json.Serialization;
 using Carefusion.Business.Interfaces;
 using Carefusion.Business.Services;
-using DotNetEnv;
-using Microsoft.OpenApi.Models;
+using Carefusion.Data;
 using Carefusion.Data.Interfaces;
-using System.Text.Json.Serialization;
-
+using Carefusion.Data.Repositories;
+using DotNetEnv;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 namespace Carefusion.Web;
 
@@ -43,6 +42,20 @@ public class Startup
         services.AddScoped<IHospitalService, HospitalService>();
         services.AddScoped<IDepartmentRepository, DepartmentRepository>();
         services.AddScoped<IDepartmentService, DepartmentService>();
+        services.AddScoped<IAllergyRepository, AllergyRepository>();
+        services.AddScoped<IAllergyService, AllergyService>();
+        services.AddScoped<IImagingRepository, ImagingRepository>();
+        services.AddScoped<IImagingService, ImagingService>();
+        services.AddScoped<IImmunizationRepository, ImmunizationRepository>();
+        services.AddScoped<IImmunizationService, ImmunizationService>();
+        services.AddScoped<ILabTestRepository, LabTestRepository>();
+        services.AddScoped<ILabTestService, LabTestService>();
+        services.AddScoped<IMedicationRepository, MedicationRepository>();
+        services.AddScoped<IMedicationService, MedicationService>();
+        services.AddScoped<IProcedureRepository, ProcedureRepository>();
+        services.AddScoped<IProcedureService, ProcedureService>();
+        services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+        services.AddScoped<IAppointmentService, AppointmentService>();
 
         services.AddControllers()
             .AddJsonOptions(options =>

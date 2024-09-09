@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using Carefusion.Entities;
-using Carefusion.Core;
+using Carefusion.Core.DTOs;
+using Carefusion.Core.Entities;
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
 namespace Carefusion.Web.Mappings;

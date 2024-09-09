@@ -1,4 +1,5 @@
 ﻿using Carefusion.Core;
+using Carefusion.Core.DTOs;
 
 namespace Carefusion.Business.Interfaces;
 
